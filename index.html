@@ -113,7 +113,6 @@
       border: 2px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
       display: block;
-      transition: border-color 0.3s, transform 0.3s;
     }
 
     .status-badge {
@@ -221,7 +220,6 @@
       border-radius: 4px;
       outline: none;
       cursor: pointer;
-      position: relative;
     }
 
     .progress-bar::-webkit-slider-thumb {
@@ -327,14 +325,304 @@
       z-index: 2;
     }
 
-    .link-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+    .link-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15), 0 4px 15px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
     }
 
-    .link-card:hover {
-      background: rgba(255, 255,
+    .link-card:hover .link-arrow {
+      transform: translateX(3px);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-image" id="bg-img"></div>
+  <div class="bg-overlay"></div>
+  <canvas id="snow-canvas"></canvas>
+
+  <div class="wrapper">
+    <div class="main-card" id="tilt-card">
+      
+      <div class="avatar-wrapper">
+        <img class="top-avatar" src="avatar.png" alt="Avatar">
+        <div class="status-badge">
+          <span class="status-dot"></span> ONLINE
+        </div>
+      </div>
+
+      <div class="profile-title">Tyrbylent</div>
+      <div class="profile-subtitle">Digital Creator</div>
+      
+      <div class="player-hud" id="player-container"></div>
+      
+      <div class="links-box" id="links-container"></div>
+
+    </div>
+  </div>
+
+  <audio id="audio-player" loop crossorigin="anonymous">
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const links = [
+      { title: "TikTok", label: "@tyrbylent1", icon: "fa-brands fa-tiktok", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
+      { title: "Discord", label: "folzygame", icon: "fa-brands fa-discord", url: "https://discord.com/users/978644075433570415" },
+      { title: "Steam", label: "tyrbylentnost", icon: "fa-brands fa-steam", url: "https://steamcommunity.com/profiles/76561198884991493/" }
+    ];
+
+    const playerContainer = document.getElementById('player-container');
+    playerContainer.innerHTML = `
+      <div class="cover-wrapper">
+        <img class="track-cover" id="track-cover" src="oblozka.jpg" alt="Cover">
+      </div>
+      <div class="visualizer-box">
+        <canvas id="visualizer" width="300" height="32"></canvas>
+      </div>
+      <div class="progress-wrap">
+        <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn" id="prev-btn"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="ctrl-btn play-pause-btn" id="play-btn"><i class="fa-solid fa-play"></i></button>
+        <button class="ctrl-btn" id="next-btn"><i class="fa-solid fa-forward-step"></i></button>
+      </div>
+    `;
+
+    const linksContainer = document.getElementById('links-container');
+    links.forEach(item => {
+      const a = document.createElement('a');
+      a.className = 'link-card';
+      a.href = item.url;
+      a.target = '_blank';
+      a.innerHTML = `
+        <div class="link-left">
+          <i class="${item.icon} link-icon"></i>
+          <span>${item.title}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right link-arrow"></i>
+      `;
+      linksContainer.appendChild(a);
+    });
+
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const trackCover = document.getElementById('track-cover');
+    const bgImg = document.getElementById('bg-img');
+
+    audio.volume = 0.5;
+    audio.currentTime = 12;
+
+    let audioCtx, analyser, source, dataArray;
+    let isAudioSetup = false;
+
+    function initAudioContext() {
+      if (isAudioSetup) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        
+        analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.7;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        isAudioSetup = true;
+        drawVisualizer();
+      } catch (e) {
+        console.log("Audio API Error:", e);
+      }
+    }
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let bassSum = 0;
+      for (let i = 0; i < 5; i++) {
+        bassSum += dataArray[i];
+      }
+      const bassAvg = bassSum / 5;
+      const bassRatio = bassAvg / 255;
+
+      const scaleCover = 1 + (bassRatio * 0.12); 
+      const scaleBg = 1 + (bassRatio * 0.035);    
+      const glowBlur = 15 + (bassRatio * 35);     
+
+      trackCover.style.transform = `scale(${scaleCover})`;
+      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.25 + bassRatio * 0.55}), 0 4px 15px rgba(0,0,0,0.8)`;
+      bgImg.style.transform = `scale(${scaleBg})`;
+
+      const totalBars = 30;
+      const barWidth = 4;
+      const gap = 4;
+      const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
+
+      for (let i = 0; i < totalBars; i++) {
+        const value = dataArray[i + 2] || 0;
+        const barHeight = (value / 255) * canvas.height;
+        const x = startX + i * (barWidth + gap);
+        const y = canvas.height - barHeight;
+
+        const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.95)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 2);
+        ctx.fill();
+      }
+    }
+
+    // Обработка клика/взаимодействия для старта музыки и анимации
+    function unlockAudio() {
+      initAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      audio.play().then(() => {
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      }).catch(err => console.log("Play blocked:", err));
+    }
+
+    ['click', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, unlockAudio, { once: true });
+    });
+
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+      }
+    });
+
+    progressBar.addEventListener('input', () => {
+      if (audio.duration) {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      }
+    });
+
+    /* --- 3D TILT EFFECT --- */
+    const card = document.getElementById('tilt-card');
+    window.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * -8;
+      const rotateY = ((x - centerX) / centerX) * 8;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    /* --- СНЕГ И ШЛЕЙФ --- */
+    const snowCanvas = document.getElementById('snow-canvas');
+    const sCtx = snowCanvas.getContext('2d');
+
+    function resizeSnowCanvas() {
+      snowCanvas.width = window.innerWidth;
+      snowCanvas.height = window.innerHeight;
+    }
+    resizeSnowCanvas();
+    window.addEventListener('resize', resizeSnowCanvas);
+
+    const snowFlakes = [];
+    const maxFlakes = 50;
+
+    for (let i = 0; i < maxFlakes; i++) {
+      snowFlakes.push({
+        x: Math.random() * snowCanvas.width,
+        y: Math.random() * snowCanvas.height,
+        r: Math.random() * 2 + 0.8,
+        speedY: Math.random() * 0.7 + 0.3,
+        speedX: Math.random() * 0.4 - 0.2,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+
+    const mouseTrail = [];
+
+    window.addEventListener('mousemove', (e) => {
+      for (let i = 0; i < 2; i++) {
+        mouseTrail.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 1.2,
+          vy: Math.random() * 1 + 0.3,
+          r: Math.random() * 2 + 1,
+          life: 1,
+          decay: Math.random() * 0.025 + 0.015
+        });
+      }
+    });
+
+    function animateSnow() {
+      requestAnimationFrame(animateSnow);
+      sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+
+      snowFlakes.forEach(f => {
+        f.y += f.speedY;
+        f.x += f.speedX;
+
+        if (f.y > snowCanvas.height) {
+          f.y = -10;
+          f.x = Math.random() * snowCanvas.width;
+        }
+
+        sCtx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+        sCtx.beginPath();
+        sCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        sCtx.fill();
+      });
+
+      for (let i = mouseTrail.length - 1; i >= 0; i--) {
+        const p = mouseTrail[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          mouseTrail.splice(i, 1);
+          continue;
+        }
+
+        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.6})`;
+        sCtx.beginPath();
+        sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        sCtx.fill();
+      }
+    }
+
+    animateSnow();
+  </script>
+
+</body>
+</html>
