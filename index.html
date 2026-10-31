@@ -25,23 +25,21 @@
       scroll-behavior: smooth;
     }
 
-    /* Премиум фон с градиентом и текстурой */
+    /* Фон с пульсацией под басы */
     .bg-image {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: 
-        radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%),
-        linear-gradient(135deg, #0a0a0a 0%, #000000 100%);
+      background: url(\'framee.png\') no-repeat center center;
+      background-size: cover;
       z-index: 0;
       will-change: transform;
       transition: transform 0.04s cubic-bezier(0.25, 0.1, 0.25, 1);
-      background-blend-mode: overlay;
     }
 
-    /* Снежный эффект с плавностью */
+    /* Снежный эффект */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -62,7 +60,7 @@
       padding: 20px;
       position: relative;
       z-index: 2;
-      perspective: 2000px;
+      perspective: 1000px;
     }
 
     .content-container {
@@ -82,7 +80,7 @@
       will-change: transform;
     }
 
-    /* Премиум аватар с улучшенным свечением */
+    /* Премиум аватар */
     .top-avatar {
       width: 120px;
       height: 120px;
@@ -91,8 +89,7 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow: 
         0 4px 25px rgba(0,0,0,0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 0 20px rgba(255, 255, 255, 0.1);
+        0 0 0 1px rgba(255, 255, 255, 0.05);
       margin-bottom: 20px;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -102,8 +99,7 @@
       border-color: rgba(255, 255, 255, 0.4);
       box-shadow: 
         0 12px 40px rgba(255, 255, 255, 0.25),
-        0 0 0 2px rgba(255, 255, 255, 0.15),
-        inset 0 0 30px rgba(255, 255, 255, 0.15);
+        0 0 0 2px rgba(255, 255, 255, 0.15);
       transform: scale(1.03);
     }
 
@@ -115,16 +111,15 @@
       margin-bottom: 20px;
     }
 
-    /* Градиентная обложка трека */
+    /* Обложка трека */
     .cover-wrapper {
       width: 120px;
       height: 120px;
       margin-top: 40px;
-      margin-bottom: 0px;
       display: flex;
       justify-content: center;
       align-items: center;
-      perspective: 2000px;
+      perspective: 1000px;
       position: relative;
     }
 
@@ -135,8 +130,7 @@
       object-fit: cover;
       box-shadow: 
         0 6px 30px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 0 15px rgba(255, 255, 255, 0.05);
+        0 0 0 1px rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
       will-change: transform, box-shadow;
       cursor: pointer;
@@ -203,7 +197,7 @@
       background: rgba(255, 255, 255, 0.25);
     }
 
-    /* Премиум кнопки с Apple-стилем */
+    /* Кнопки */
     .controls {
       display: flex;
       flex-direction: row;
@@ -256,8 +250,7 @@
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.4);
       box-shadow: 
-        0 0 20px rgba(255, 255, 255, 0.3),
-        0 0 0 2px rgba(255, 255, 255, 0.1);
+        0 0 20px rgba(255, 255, 255, 0.3);
       transform: scale(1.1);
     }
 
@@ -271,7 +264,7 @@
       height: 48px;
     }
 
-    /* Премиум карточки ссылок */
+    /* Карточки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -303,21 +296,17 @@
         0 8px 25px rgba(0,0,0,0.3),
         0 0 0 1px rgba(255, 255, 255, 0.05);
       transform-style: preserve-3d;
-      transition: 
-        all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .link-card:hover {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.3);
       box-shadow: 
-        0 12px 35px rgba(255, 255, 255, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.15);
+        0 12px 35px rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
     }
 
-    /* Анимации текстуры */
     .link-card::after {
       content: \'\';
       position: absolute;
@@ -344,6 +333,7 @@
   </style>
 </head>
 <body>
+
   <div class="bg-image" id="bg-img"></div>
   <canvas id="snow-canvas"></canvas>
 
@@ -446,7 +436,6 @@
       const bassAvg = bassSum / 5;
       const bassRatio = bassAvg / 255;
 
-      // Улучшенные премиум эффекты
       const scaleCover = 1 + (bassRatio * 0.15); 
       const scaleBg = 1 + (bassRatio * 0.03);    
       const glowBlur = 15 + (bassRatio * 30);     
@@ -454,7 +443,7 @@
       if(!trackCover.classList.contains(\'is-hovered\')) {
         trackCover.style.transform = `scale(${scaleCover})`;
       }
-      trackCover.style.boxShadow = `0 6px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.5}), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.05)`;
+      trackCover.style.boxShadow = `0 6px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.5}), 0 0 0 1px rgba(255, 255, 255, 0.1)`;
       bgImg.style.transform = `scale(${scaleBg})`;
 
       const totalBars = 36;
@@ -462,19 +451,13 @@
       const gap = 5;
       const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
 
-      // Улучшенный визуализатор с градиентом
       for (let i = 0; i < totalBars; i++) {
         const value = dataArray[i + 3] || dataArray[i] || 0;
         const barHeight = (value / 255) * canvas.height;
         const x = startX + i * (barWidth + gap);
         const y = canvas.height - barHeight;
 
-        // Премиум градиент для баров
-        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${0.7 + (value / 255) * 0.3})`);
-        gradient.addColorStop(1, `rgba(255, 255, 255, ${0.4 + (value / 255) * 0.3})`);
-        
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.45 + (value / 255) * 0.55})`;
         ctx.beginPath();
         ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 4);
         ctx.fill();
@@ -505,7 +488,7 @@
       initAudioContext();
       if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
 
-      if (audio.paused) {
+      if (audio paused) {
         audio.play();
         playBtn.innerText = \'❚❚\';
       } else {
@@ -538,12 +521,12 @@
         const rotateX = ((y - centerY) / centerY) * -10;
         const rotateY = ((x - centerX) / centerX) * 10;
 
-        card.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.03)`;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.03)`;
       });
 
       card.addEventListener(\'mouseleave\', () => {
         card.classList.remove(\'is-hovered\');
-        card.style.transform = `perspective(2000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
       });
     });
 
@@ -627,5 +610,6 @@
 
     animateSnow();
   </script>
+
 </body>
 </html>
