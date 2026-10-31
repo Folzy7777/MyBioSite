@@ -14,6 +14,7 @@
       padding: 0;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       user-select: none;
+      cursor: none !important; /* Убираем дефолтный курсор насовсем */
     }
 
     html, body {
@@ -24,7 +25,33 @@
       color: #fff;
     }
 
-    /* Экран приветствия (Intro Splash) */
+    /* Кастомный неоновый курсор */
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.9),
+                  0 0 30px rgba(255, 255, 255, 0.5);
+      transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
+      will-change: transform;
+    }
+
+    #custom-cursor.hovered {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 1),
+                  0 0 50px rgba(0, 255, 170, 0.6);
+    }
+
+    /* Экран входа (интро при заходе) */
     #intro-screen {
       position: fixed;
       top: 0;
@@ -37,7 +64,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s ease;
     }
 
@@ -74,18 +100,18 @@
       pointer-events: none;
     }
 
-    /* Фоновое фото с пульсацией под басы */
+    /* Фоновое фото с параллаксом и пульсацией под басы */
     .bg-image {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: -30px;
+      left: -30px;
+      width: calc(100vw + 60px);
+      height: calc(100vh + 60px);
       background: url('framee.png') no-repeat center center;
       background-size: cover;
       z-index: 0;
       will-change: transform, filter;
-      transition: transform 0.05s ease-out, filter 0.05s ease-out;
+      transition: filter 0.05s ease-out;
       filter: brightness(0.65) contrast(1.1);
     }
 
@@ -100,7 +126,7 @@
       pointer-events: none;
     }
 
-    /* Боковые премиум-эффекты (подсветка по краям) */
+    /* Боковые световые эффекты */
     .side-glow-left, .side-glow-right {
       position: fixed;
       top: 0;
@@ -123,7 +149,7 @@
       background: linear-gradient(270deg, rgba(0, 255, 170, 0.2), transparent);
     }
 
-    /* Холст для снега и следа мыши */
+    /* Холст для снега и шлейфа мыши */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -144,10 +170,9 @@
       padding: 20px;
       position: relative;
       z-index: 4;
-      perspective: 1200px;
     }
 
-    /* Основной премиум-контейнер с анимацией появления */
+    /* Основной премиум-контейнер */
     .main-card {
       width: 360px;
       background: rgba(18, 20, 29, 0.55);
@@ -161,9 +186,6 @@
       align-items: center;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
                   inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      transform-style: preserve-3d;
-      will-change: transform;
-      transition: transform 0.15s ease-out, box-shadow 0.2s ease;
       opacity: 0;
       transform: translateY(40px) scale(0.95);
       animation: cardEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
@@ -260,7 +282,6 @@
       width: 90px;
       height: 90px;
       margin-bottom: 12px;
-      perspective: 800px;
     }
 
     .track-cover {
@@ -302,7 +323,6 @@
       background: rgba(255, 255, 255, 0.15);
       border-radius: 4px;
       outline: none;
-      cursor: pointer;
     }
 
     .progress-bar::-webkit-slider-thumb {
@@ -312,7 +332,6 @@
       border-radius: 50%;
       background: #fff;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      cursor: pointer;
       transition: transform 0.15s;
     }
 
@@ -335,7 +354,6 @@
       border-radius: 50%;
       color: #fff;
       font-size: 11px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -423,7 +441,10 @@
 </head>
 <body>
 
-  <!-- Экран входа (интро при заходе) -->
+  <!-- Кастомный курсор -->
+  <div id="custom-cursor"></div>
+
+  <!-- Экран входа (интро) -->
   <div id="intro-screen">
     <div class="intro-content">
       <div class="intro-title">TYRBYLENT</div>
@@ -434,14 +455,13 @@
   <div class="bg-image" id="bg-img"></div>
   <div class="bg-overlay"></div>
   
-  <!-- Боковые световые эффекты -->
   <div class="side-glow-left" id="glow-left"></div>
   <div class="side-glow-right" id="glow-right"></div>
 
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
-    <div class="main-card" id="tilt-card">
+    <div class="main-card">
       
       <div class="avatar-wrapper">
         <img class="top-avatar" src="avatar.png" alt="Avatar">
@@ -468,7 +488,7 @@
     const links = [
       { title: "TikTok", label: "@tyrbylent1", icon: "fa-brands fa-tiktok", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
       { title: "Discord", label: "folzygame", icon: "fa-brands fa-discord", url: "https://discord.com/users/978644075433570415" },
-      { title: "Steam", label: "tyrbylentnost", icon: "fa-steam", url: "https://steamcommunity.com/profiles/76561198884991493/" }
+      { title: "Steam", label: "tyrbylentnost", icon: "fa-brands fa-steam", url: "https://steamcommunity.com/profiles/76561198884991493/" }
     ];
 
     const playerContainer = document.getElementById('player-container');
@@ -515,12 +535,51 @@
     const introScreen = document.getElementById('intro-screen');
     const glowLeft = document.getElementById('glow-left');
     const glowRight = document.getElementById('glow-right');
+    const cursor = document.getElementById('custom-cursor');
 
     audio.volume = 0.5;
     audio.currentTime = 12;
 
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
+
+    // Плавное следование курсора и параллакс фона
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+    let bgX = 0;
+    let bgY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function updateCursorAndParallax() {
+      // Плавное движение курсора (lerp)
+      cursorX += (mouseX - cursorX) * 0.2;
+      cursorY += (mouseY - cursorY) * 0.2;
+      cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+
+      // Параллакс для фона (смещение в противоположную сторону)
+      const targetBgX = (mouseX / window.innerWidth - 0.5) * -25;
+      const targetBgY = (mouseY / window.innerHeight - 0.5) * -25;
+      bgX += (targetBgX - bgX) * 0.1;
+      bgY += (targetBgY - bgY) * 0.1;
+
+      // Применяем параллакс и басовый масштаб
+      bgImg.style.transform = `translate(${bgX}px, ${bgY}px) scale(${window.currentBgScale || 1})`;
+
+      requestAnimationFrame(updateCursorAndParallax);
+    }
+    updateCursorAndParallax();
+
+    // Эффект увеличения курсора при наведении на кликабельные элементы
+    document.querySelectorAll('a, button, input').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    });
 
     function initAudioContext() {
       if (isAudioSetup) return;
@@ -542,6 +601,8 @@
       }
     }
 
+    window.currentBgScale = 1;
+
     function drawVisualizer() {
       requestAnimationFrame(drawVisualizer);
       if (!analyser) return;
@@ -557,14 +618,12 @@
       const bassRatio = bassAvg / 255;
 
       const scaleCover = 1 + (bassRatio * 0.12); 
-      const scaleBg = 1 + (bassRatio * 0.035);    
+      window.currentBgScale = 1 + (bassRatio * 0.035);    
       const glowBlur = 15 + (bassRatio * 35);     
 
       trackCover.style.transform = `scale(${scaleCover})`;
       trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.25 + bassRatio * 0.55}), 0 4px 15px rgba(0,0,0,0.8)`;
-      bgImg.style.transform = `scale(${scaleBg})`;
 
-      // Динамическая подсветка боков под басы
       glowLeft.style.opacity = 0.2 + (bassRatio * 0.5);
       glowRight.style.opacity = 0.2 + (bassRatio * 0.5);
 
@@ -590,7 +649,6 @@
       }
     }
 
-    // Запуск сайта по клику на интро-экран
     function launchSite(e) {
       e.stopPropagation();
       introScreen.classList.add('hide');
@@ -633,22 +691,7 @@
       }
     });
 
-    /* --- 3D TILT EFFECT --- */
-    const card = document.getElementById('tilt-card');
-    window.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      const rotateX = ((y - centerY) / centerY) * -8;
-      const rotateY = ((x - centerX) / centerX) * 8;
-
-      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-
-    /* --- СНЕГ И ШЛЕЙФ --- */
+    /* --- СНЕГ И ШЛЕЙФ МЫШИ --- */
     const snowCanvas = document.getElementById('snow-canvas');
     const sCtx = snowCanvas.getContext('2d');
 
