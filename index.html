@@ -24,7 +24,7 @@
       color: #fff;
     }
 
-    /* Фоновое фото framee.png с пульсацией басов */
+    /* Фоновое фото framee.png с усиленной пульсацией под басы */
     .bg-image {
       position: fixed;
       top: 0;
@@ -35,7 +35,7 @@
       background-size: cover;
       z-index: 0;
       will-change: transform;
-      transition: transform 0.05s ease-out;
+      transition: transform 0.04s ease-out;
     }
 
     /* Холст для снега и следа мыши */
@@ -59,7 +59,7 @@
       padding: 20px;
       position: relative;
       z-index: 2;
-      perspective: 1000px; /* Включаем 3D-пространство */
+      perspective: 1000px;
     }
 
     .content-container {
@@ -70,13 +70,12 @@
       margin: 0 auto;
     }
 
-    /* Базовый класс для 3D-карточек */
     .tilt-card {
       transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
       will-change: transform;
     }
 
-    /* Аватарка с 3D эффектом */
+    /* Аватарка с полноценным свечением и 3D */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -88,6 +87,11 @@
       cursor: pointer;
     }
 
+    .top-avatar:hover, .tilt-card:hover {
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
+    }
+
     .player-hud {
       display: flex;
       flex-direction: column;
@@ -96,7 +100,7 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка трека с пульсацией басов и 3D */
+    /* Обложка трека */
     .cover-wrapper {
       width: 110px;
       height: 110px;
@@ -186,21 +190,21 @@
       width: 32px;
       height: 32px;
       flex-shrink: 0;
-      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s;
+      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
       background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
     }
 
     .play-pause-btn {
       font-size: 15px;
     }
 
-    /* Плашки ссылок с текстурой морозного инея и капель */
+    /* Плашки ссылок с текстурой инея и капель */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -233,7 +237,6 @@
       transform-style: preserve-3d;
     }
 
-    /* Текстура инея и капель поверх плашки */
     .link-card::before {
       content: '';
       position: absolute;
@@ -250,7 +253,6 @@
       border-radius: 12px;
     }
 
-    /* Эффект блика / преломления света капелек при наведении */
     .link-card::after {
       content: '';
       position: absolute;
@@ -272,8 +274,8 @@
 
     .link-card:hover {
       background: rgba(255, 255, 255, 0.24);
-      border-color: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25), 0 4px 18px rgba(0,0,0,0.35);
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
     }
   </style>
 </head>
@@ -357,7 +359,7 @@
         analyser.connect(audioCtx.destination);
         
         analyser.fftSize = 128;
-        analyser.smoothingTimeConstant = 0.7;
+        analyser.smoothingTimeConstant = 0.6;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         
         isAudioSetup = true;
@@ -374,22 +376,21 @@
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Пульсация басов
       let bassSum = 0;
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 5; i++) {
         bassSum += dataArray[i];
       }
-      const bassAvg = bassSum / 4;
+      const bassAvg = bassSum / 5;
       const bassRatio = bassAvg / 255;
 
-      const scaleCover = 1 + (bassRatio * 0.08);
-      const scaleBg = 1 + (bassRatio * 0.025);
-      const glowBlur = 20 + (bassRatio * 25);
+      const scaleCover = 1 + (bassRatio * 0.18); 
+      const scaleBg = 1 + (bassRatio * 0.045);    
+      const glowBlur = 20 + (bassRatio * 40);     
 
       if(!trackCover.classList.contains('is-hovered')) {
         trackCover.style.transform = `scale(${scaleCover})`;
       }
-      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.2 + bassRatio * 0.5}), 0 4px 20px rgba(0,0,0,0.9)`;
+      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.6}), 0 4px 20px rgba(0,0,0,0.9)`;
       bgImg.style.transform = `scale(${scaleBg})`;
 
       const totalBars = 36;
@@ -455,7 +456,7 @@
       }
     });
 
-    /* --- 3D TILT EFFECT ДЛЯ ВСЕХ ПЛАШЕК --- */
+    /* --- 3D TILT EFFECT --- */
     document.querySelectorAll('[data-tilt]').forEach(card => {
       card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
       card.addEventListener('mousemove', (e) => {
