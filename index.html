@@ -14,7 +14,7 @@
       padding: 0;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       user-select: none;
-      cursor: none !important; /* Убираем дефолтный курсор насовсем */
+      cursor: none !important;
     }
 
     html, body {
@@ -25,33 +25,51 @@
       color: #fff;
     }
 
-    /* Кастомный неоновый курсор */
+    /* Кастомный минималистичный курсор (точка + кольцо) */
     #custom-cursor {
       position: fixed;
       top: 0;
       left: 0;
-      width: 16px;
-      height: 16px;
+      width: 8px;
+      height: 8px;
       background: #fff;
       border-radius: 50%;
       pointer-events: none;
       z-index: 10000;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.9),
-                  0 0 30px rgba(255, 255, 255, 0.5);
-      transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      transition: transform 0.1s ease-out, background-color 0.2s;
+    }
+
+    #cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
       will-change: transform;
     }
 
-    #custom-cursor.hovered {
-      width: 32px;
-      height: 32px;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 0 25px rgba(255, 255, 255, 1),
-                  0 0 50px rgba(0, 255, 170, 0.6);
+    body.hovering #cursor-ring {
+      width: 44px;
+      height: 44px;
+      border-color: rgba(255, 0, 60, 0.8);
+      background: rgba(255, 0, 60, 0.05);
+      box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
     }
 
-    /* Экран входа (интро при заходе) */
+    body.hovering #custom-cursor {
+      background: #ff003c;
+      box-shadow: 0 0 12px #ff003c;
+    }
+
+    /* Экран входа (интро) */
     #intro-screen {
       position: fixed;
       top: 0;
@@ -100,7 +118,7 @@
       pointer-events: none;
     }
 
-    /* Фоновое фото с параллаксом и пульсацией под басы */
+    /* Фоновое фото с параллаксом */
     .bg-image {
       position: fixed;
       top: -30px;
@@ -378,7 +396,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Плашки ссылок */
+    /* Плашки ссылок с бегущим красным неоном */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -392,17 +410,58 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(18, 20, 29, 0.6);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
       color: #fff;
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      transition: all 0.25s ease;
+      transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
       overflow: hidden;
+      z-index: 1;
+    }
+
+    .link-card::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: rgba(18, 20, 29, 0.85);
+      border-radius: 13px;
+      z-index: -1;
+      transition: background 0.3s ease;
+    }
+
+    .link-card::after {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(255, 0, 60, 0.9) 360deg);
+      opacity: 0;
+      z-index: -2;
+      transition: opacity 0.3s ease;
+      animation: rotateBorder 3s linear infinite;
+      animation-play-state: paused;
+    }
+
+    @keyframes rotateBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .link-card:hover::after {
+      opacity: 1;
+      animation-play-state: running;
+    }
+
+    .link-card:hover::before {
+      background: rgba(25, 20, 30, 0.92);
+    }
+
+    .link-card:hover {
+      box-shadow: 0 10px 30px rgba(255, 0, 60, 0.25), 0 4px 15px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
     }
 
     .link-left {
@@ -417,6 +476,12 @@
       width: 20px;
       text-align: center;
       color: rgba(255, 255, 255, 0.8);
+      transition: color 0.3s ease;
+    }
+
+    .link-card:hover .link-icon {
+      color: #ff003c;
+      text-shadow: 0 0 10px rgba(255, 0, 60, 0.8);
     }
 
     .link-arrow {
@@ -426,16 +491,9 @@
       z-index: 2;
     }
 
-    .link-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15), 0 4px 15px rgba(0,0,0,0.4);
-      transform: translateY(-2px);
-    }
-
     .link-card:hover .link-arrow {
       transform: translateX(3px);
-      color: #fff;
+      color: #ff003c;
     }
   </style>
 </head>
@@ -443,6 +501,7 @@
 
   <!-- Кастомный курсор -->
   <div id="custom-cursor"></div>
+  <div id="cursor-ring"></div>
 
   <!-- Экран входа (интро) -->
   <div id="intro-screen">
@@ -536,6 +595,7 @@
     const glowLeft = document.getElementById('glow-left');
     const glowRight = document.getElementById('glow-right');
     const cursor = document.getElementById('custom-cursor');
+    const cursorRing = document.getElementById('cursor-ring');
 
     audio.volume = 0.5;
     audio.currentTime = 12;
@@ -543,11 +603,12 @@
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
 
-    // Плавное следование курсора и параллакс фона
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let cursorX = mouseX;
     let cursorY = mouseY;
+    let ringX = mouseX;
+    let ringY = mouseY;
     let bgX = 0;
     let bgY = 0;
 
@@ -557,28 +618,27 @@
     });
 
     function updateCursorAndParallax() {
-      // Плавное движение курсора (lerp)
-      cursorX += (mouseX - cursorX) * 0.2;
-      cursorY += (mouseY - cursorY) * 0.2;
+      cursorX = mouseX;
+      cursorY = mouseY;
       cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
 
-      // Параллакс для фона (смещение в противоположную сторону)
+      ringX += (mouseX - ringX) * 0.15;
+      ringY += (mouseY - ringY) * 0.15;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+
       const targetBgX = (mouseX / window.innerWidth - 0.5) * -25;
       const targetBgY = (mouseY / window.innerHeight - 0.5) * -25;
       bgX += (targetBgX - bgX) * 0.1;
       bgY += (targetBgY - bgY) * 0.1;
-
-      // Применяем параллакс и басовый масштаб
       bgImg.style.transform = `translate(${bgX}px, ${bgY}px) scale(${window.currentBgScale || 1})`;
 
       requestAnimationFrame(updateCursorAndParallax);
     }
     updateCursorAndParallax();
 
-    // Эффект увеличения курсора при наведении на кликабельные элементы
     document.querySelectorAll('a, button, input').forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
     });
 
     function initAudioContext() {
