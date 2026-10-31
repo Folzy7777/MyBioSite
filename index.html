@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tyrbylent | Bio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a0c;
+      color: #fff;
+    }
+
+    /* Фоновое видео (fon.mp4) */
+    #bg-video {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: -2;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      filter: brightness(0.4) contrast(1.1);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.75) 100%);
+      z-index: -1;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    /* 1. Аватарка сверху (avatar.jpg) */
+    .top-avatar {
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+      margin-bottom: 20px;
+    }
+
+    /* 2. HUD плеера */
+    .player-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 340px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .cover-wrapper {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    /* Холст для визуализатора (столбики вокруг обложки) */
+    #visualizer {
+      position: absolute;
+      width: 170px;
+      height: 90px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .track-cover {
+      width: 62px;
+      height: 62px;
+      border-radius: 8px;
+      object-fit: cover;
+      z-index: 2;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Ползунок длины трека */
+    .progress-wrap {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin: 10px 0 12px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .progress-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+    }
+
+    /* Кнопки плеера (♥, ◄◄, пауза/плей, ►►) */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .play-pause-btn {
+      font-size: 18px;
+    }
+
+    /* 3. Блок ссылок */
+    .links-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .link-card:hover {
+      background: rgba(255, 255, 255, 0.26);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Фоновое видео (fon.mp4) -->
+  <video autoplay loop muted playsinline id="bg-video">
+    <source src="fon.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+
+  <div class="wrapper">
+    <!-- Аватарка вверху (avatar.jpg) -->
+    <img class="top-avatar" src="avatar.jpg" alt="Avatar">
+    
+    <!-- Плеер с визуализатором (генерируется скриптом) -->
+    <div class="player-hud" id="player-container"></div>
+    
+    <!-- Кнопки ссылок -->
+    <div class="links-box" id="links-container"></div>
+  </div>
+
+  <!-- Аудио (Music.mp3) -->
+  <audio id="audio-player" loop crossorigin="anonymous">
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // ==========================================
+    // НАСТРОЙКИ ССЫЛОК
+    // ==========================================
+    const CONFIG = {
+      links: [
+        { title: "ссылка на тик ток", url: "https://tiktok.com" },
+        { title: "ссылка на дискорд", url: "https://discord.gg" },
+        { title: "ссылка на стим", url: "https://steamcommunity.com" }
+      ]
+    };
+
+    // Генерация плеера (использует обложку oblozka.jpg)
+    const playerContainer = document.getElementById('player-container');
+    playerContainer.innerHTML = `
+      <div class="cover-wrapper">
+        <canvas id="visualizer"></canvas>
+        <img class="track-cover" src="oblozka.jpg" alt="Cover">
+      </div>
+      <div class="progress-wrap">
+        <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn">♥</button>
+        <button class="ctrl-btn" id="prev-btn">◄◄</button>
+        <button class="ctrl-btn play-pause-btn" id="play-btn">❚❚</button>
+        <button class="ctrl-btn" id="next-btn">►►</button>
+      </div>
+    `;
+
+    // Генерация кнопок ссылок
+    const linksContainer = document.getElementById('links-container');
+    CONFIG.links.forEach(item => {
+      const a = document.createElement('a');
+      a.className = 'link-card';
+      a.href = item.url;
+      a.target = '_blank';
+      a.innerText = item.title;
+      linksContainer.appendChild(a);
+    });
+
+    // ==========================================
+    // ЛОГИКА АУДИО И ВИЗУАЛИЗАТОРА
+    // ==========================================
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+
+    let audioCtx, analyser, source, dataArray;
+    let isAudioSetup = false;
+
+    function initAudioContext() {
+      if (isAudioSetup) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      source = audioCtx.createMediaElementSource(audio);
+
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      analyser.fftSize = 32;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      isAudioSetup = true;
+      drawVisualizer();
+    }
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = 6;
+      const gap = 4;
+      const totalBars = 12;
+      const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
+
+      for (let i = 0; i < totalBars; i++) {
+        const value = dataArray[i] || 0;
+        const barHeight = (value / 255) * (canvas.height * 0.7);
+        const x = startX + i * (barWidth + gap);
+        const y = (canvas.height / 2) - (barHeight / 2);
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + (value / 255) * 0.6})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+        
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 4), 3);
+        ctx.fill();
+      }
+    }
+
+    // Управление воспроизведением по кнопке
+    playBtn.addEventListener('click', () => {
+      initAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerText = '❚❚';
+      } else {
+        audio.pause();
+        playBtn.innerText = '▶';
+      }
+    });
+
+    // Автостарт звука при первом клике в любую точку экрана (требование браузеров)
+    document.body.addEventListener('click', () => {
+      if (audio.paused) {
+        initAudioContext();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        audio.play().then(() => playBtn.innerText = '❚❚').catch(() => {});
+      }
+    }, { once: true });
+
+    // Синхронизация ползунка с прогрессом трека
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+      }
+    });
+
+    // Ручная перемотка ползунком
+    progressBar.addEventListener('input', () => {
+      if (audio.duration) {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      }
