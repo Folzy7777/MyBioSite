@@ -25,18 +25,16 @@
       scroll-behavior: smooth;
     }
 
-    /* Фон с пульсацией под басы */
+    /* Фоновое изображение */
     .bg-image {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: url(\'framee.png\') no-repeat center center;
       background-size: cover;
       z-index: 0;
-      will-change: transform;
-      transition: transform 0.04s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     /* Снежный эффект */
@@ -44,8 +42,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 1;
     }
@@ -56,7 +54,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      width: 100vw;
+      width: 100%;
       padding: 20px;
       position: relative;
       z-index: 2;
@@ -80,7 +78,7 @@
       will-change: transform;
     }
 
-    /* Премиум аватар */
+    /* Аватарка */
     .top-avatar {
       width: 120px;
       height: 120px;
@@ -92,7 +90,6 @@
         0 0 0 1px rgba(255, 255, 255, 0.05);
       margin-bottom: 20px;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .top-avatar:hover, .tilt-card:hover {
@@ -111,7 +108,6 @@
       margin-bottom: 20px;
     }
 
-    /* Обложка трека */
     .cover-wrapper {
       width: 120px;
       height: 120px;
@@ -120,7 +116,6 @@
       justify-content: center;
       align-items: center;
       perspective: 1000px;
-      position: relative;
     }
 
     .track-cover {
@@ -134,7 +129,6 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       will-change: transform, box-shadow;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .visualizer-box {
@@ -197,7 +191,6 @@
       background: rgba(255, 255, 255, 0.25);
     }
 
-    /* Кнопки */
     .controls {
       display: flex;
       flex-direction: row;
@@ -229,20 +222,6 @@
         border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .ctrl-btn::before {
-      content: \'\';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-      pointer-events: none;
-      border-radius: 50%;
     }
 
     .ctrl-btn:hover {
@@ -264,7 +243,6 @@
       height: 48px;
     }
 
-    /* Карточки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -295,7 +273,6 @@
       box-shadow: 
         0 8px 25px rgba(0,0,0,0.3),
         0 0 0 1px rgba(255, 255, 255, 0.05);
-      transform-style: preserve-3d;
       transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
@@ -305,30 +282,6 @@
       box-shadow: 
         0 12px 35px rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
-    }
-
-    .link-card::after {
-      content: \'\';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 10% 50%, rgba(255,255,255,0.3) 1px, transparent 2px),
-        radial-gradient(circle at 90% 50%, rgba(255,255,255,0.2) 1px, transparent 2px),
-        linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
-      opacity: 0.7;
-      pointer-events: none;
-      border-radius: 16px;
-    }
-
-    .link-card:hover::after {
-      background: 
-        radial-gradient(circle at 30% 70%, rgba(255,255,255,0.4) 1px, transparent 2px),
-        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.3) 1px, transparent 2px),
-        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%);
-      opacity: 0.8;
     }
   </style>
 </head>
@@ -488,7 +441,7 @@
       initAudioContext();
       if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
 
-      if (audio paused) {
+      if (audio.paused) {
         audio.play();
         playBtn.innerText = \'❚❚\';
       } else {
@@ -555,11 +508,11 @@
       });
     }
 
-    const mouseTrail = [];
+    const mouseTail = [];
 
     window.addEventListener(\'mousemove\', (e) => {
       for (let i = 0; i < 2; i++) {
-        mouseTrail.push({
+        mouseTail.push({
           x: e.clientX,
           y: e.clientY,
           vx: (Math.random() - 0.5) * 1.8,
@@ -590,14 +543,14 @@
         sCtx.fill();
       });
 
-      for (let i = mouseTrail.length - 1; i >= 0; i--) {
-        const p = mouseTrail[i];
+      for (let i = mouseTail.length - 1; i >= 0; i--) {
+        const p = mouseTail[i];
         p.x += p.vx;
         p.y += p.vy;
         p.life -= p.decay;
 
         if (p.life <= 0) {
-          mouseTrail.splice(i, 1);
+          mouseTail.splice(i, 1);
           continue;
         }
 
