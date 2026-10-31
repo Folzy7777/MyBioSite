@@ -25,7 +25,7 @@
       color: #fff;
     }
 
-    /* Классический аккуратный круглый курсор из первой версии */
+    /* Классический круглый курсор со свечением */
     #custom-cursor {
       position: fixed;
       top: 0;
@@ -149,7 +149,7 @@
       background: linear-gradient(270deg, rgba(0, 255, 170, 0.2), transparent);
     }
 
-    /* Холст для снега */
+    /* Холст для снега и шлейфа мыши */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -378,7 +378,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* ИСПРАВЛЕННЫЙ НЕОН: бегает строго по контуру плашки благодаря большой подложке */
+    /* Плашки ссылок с красивым красным неоновым свечением при наведении */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -401,51 +401,15 @@
       font-weight: 600;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: transform 0.25s ease, box-shadow 0.3s ease;
+      transition: all 0.3s ease;
       overflow: hidden;
-      z-index: 1;
-    }
-
-    /* Внутренний фон карточки, чтобы перекрыть вращающийся градиент по центру */
-    .link-card::before {
-      content: '';
-      position: absolute;
-      inset: 1px;
-      background: rgba(18, 20, 29, 0.92);
-      border-radius: 13px;
-      z-index: -1;
-    }
-
-    /* Вращающийся контур строго по периметру */
-    .link-card::after {
-      content: '';
-      position: absolute;
-      top: -150%;
-      left: -150%;
-      right: -150%;
-      bottom: -150%;
-      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 75%, rgba(255, 0, 60, 1) 100%);
-      z-index: -2;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      animation: rotateBorder 3s linear infinite;
-      animation-play-state: paused;
-    }
-
-    @keyframes rotateBorder {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .link-card:hover::after {
-      opacity: 1;
-      animation-play-state: running;
     }
 
     .link-card:hover {
-      box-shadow: 0 10px 30px rgba(255, 0, 60, 0.35), 0 4px 15px rgba(0,0,0,0.4);
+      background: rgba(255, 0, 60, 0.12);
+      border-color: rgba(255, 0, 60, 0.8);
+      box-shadow: 0 8px 30px rgba(255, 0, 60, 0.35), 0 4px 15px rgba(0,0,0,0.4);
       transform: translateY(-2px);
-      border-color: transparent;
     }
 
     .link-left {
@@ -483,7 +447,7 @@
 </head>
 <body>
 
-  <!-- Классический круглый кастомный курсор -->
+  <!-- Кастомный круглый курсор -->
   <div id="custom-cursor"></div>
 
   <!-- Экран входа (интро) -->
@@ -500,6 +464,7 @@
   <div class="side-glow-left" id="glow-left"></div>
   <div class="side-glow-right" id="glow-right"></div>
 
+  <!-- Холст для снега и шлейфа мыши -->
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
@@ -598,11 +563,12 @@
     });
 
     function updateCursorAndParallax() {
-      // Курсор следует без задержки, чтобы сохранялась идеальная точность
+      // Курсор следует мгновенно для идеальной точности
       cursorX = mouseX;
       cursorY = mouseY;
       cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
 
+      // Параллакс фона
       const targetBgX = (mouseX / window.innerWidth - 0.5) * -25;
       const targetBgY = (mouseY / window.innerHeight - 0.5) * -25;
       bgX += (targetBgX - bgX) * 0.1;
@@ -728,7 +694,7 @@
       }
     });
 
-    /* --- СНЕГ --- */
+    /* --- СНЕГ И ШЛЕЙФ МЫШИ --- */
     const snowCanvas = document.getElementById('snow-canvas');
     const sCtx = snowCanvas.getContext('2d');
 
@@ -753,6 +719,22 @@
       });
     }
 
+    const mouseTrail = [];
+
+    window.addEventListener('mousemove', (e) => {
+      for (let i = 0; i < 2; i++) {
+        mouseTrail.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 1.2,
+          vy: Math.random() * 1 + 0.3,
+          r: Math.random() * 2 + 1,
+          life: 1,
+          decay: Math.random() * 0.025 + 0.015
+        });
+      }
+    });
+
     function animateSnow() {
       requestAnimationFrame(animateSnow);
       sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
@@ -771,6 +753,23 @@
         sCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         sCtx.fill();
       });
+
+      for (let i = mouseTrail.length - 1; i >= 0; i--) {
+        const p = mouseTrail[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          mouseTrail.splice(i, 1);
+          continue;
+        }
+
+        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.6})`;
+        sCtx.beginPath();
+        sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        sCtx.fill();
+      }
     }
 
     animateSnow();
