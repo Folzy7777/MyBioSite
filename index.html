@@ -25,52 +25,30 @@
       color: #fff;
     }
 
-    /* Кастомный курсор-прицел (четко видно куда направлен) */
+    /* Классический аккуратный круглый курсор из первой версии */
     #custom-cursor {
       position: fixed;
       top: 0;
       left: 0;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
       pointer-events: none;
       z-index: 10000;
       transform: translate(-50%, -50%);
-      transition: transform 0.05s ease-out;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.9),
+                  0 0 25px rgba(255, 255, 255, 0.4);
+      transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
+      will-change: transform;
     }
 
-    /* Точка в центре прицела */
-    #custom-cursor::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 4px;
-      height: 4px;
-      background: #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 8px #fff, 0 0 15px #ff003c;
-    }
-
-    /* Уголки прицела */
-    #custom-cursor::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
-      transition: all 0.2s ease;
-    }
-
-    body.hovering #custom-cursor::after {
-      border-color: #ff003c;
-      transform: scale(1.25) rotate(45deg);
-      box-shadow: 0 0 15px #ff003c;
-    }
-
-    body.hovering #custom-cursor::before {
-      background: #ff003c;
+    #custom-cursor.hovered {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 0, 60, 0.85);
+      box-shadow: 0 0 20px rgba(255, 0, 60, 0.9),
+                  0 0 40px rgba(255, 0, 60, 0.5);
     }
 
     /* Экран входа (интро) */
@@ -171,7 +149,7 @@
       background: linear-gradient(270deg, rgba(0, 255, 170, 0.2), transparent);
     }
 
-    /* Холст для снега и шлейфа мыши */
+    /* Холст для снега */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -400,7 +378,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Исправленные плашки ссылок: бегущий красный неон строго по контуру */
+    /* ИСПРАВЛЕННЫЙ НЕОН: бегает строго по контуру плашки благодаря большой подложке */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -425,16 +403,29 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: transform 0.25s ease, box-shadow 0.3s ease;
       overflow: hidden;
+      z-index: 1;
     }
 
-    /* Рамка с бегущим градиентом строго по периметру через псевдоэлемент и mask */
+    /* Внутренний фон карточки, чтобы перекрыть вращающийся градиент по центру */
     .link-card::before {
       content: '';
       position: absolute;
-      inset: -2px;
-      border-radius: 16px;
-      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(255, 0, 60, 1) 360deg);
+      inset: 1px;
+      background: rgba(18, 20, 29, 0.92);
+      border-radius: 13px;
       z-index: -1;
+    }
+
+    /* Вращающийся контур строго по периметру */
+    .link-card::after {
+      content: '';
+      position: absolute;
+      top: -150%;
+      left: -150%;
+      right: -150%;
+      bottom: -150%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 75%, rgba(255, 0, 60, 1) 100%);
+      z-index: -2;
       opacity: 0;
       transition: opacity 0.3s ease;
       animation: rotateBorder 3s linear infinite;
@@ -446,13 +437,13 @@
       100% { transform: rotate(360deg); }
     }
 
-    .link-card:hover::before {
+    .link-card:hover::after {
       opacity: 1;
       animation-play-state: running;
     }
 
     .link-card:hover {
-      box-shadow: 0 10px 30px rgba(255, 0, 60, 0.3), 0 4px 15px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 30px rgba(255, 0, 60, 0.35), 0 4px 15px rgba(0,0,0,0.4);
       transform: translateY(-2px);
       border-color: transparent;
     }
@@ -492,7 +483,7 @@
 </head>
 <body>
 
-  <!-- Кастомный курсор-прицел -->
+  <!-- Классический круглый кастомный курсор -->
   <div id="custom-cursor"></div>
 
   <!-- Экран входа (интро) -->
@@ -607,7 +598,7 @@
     });
 
     function updateCursorAndParallax() {
-      // Курсор следует мгновенно для максимальной точности
+      // Курсор следует без задержки, чтобы сохранялась идеальная точность
       cursorX = mouseX;
       cursorY = mouseY;
       cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
@@ -623,8 +614,8 @@
     updateCursorAndParallax();
 
     document.querySelectorAll('a, button, input').forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
     });
 
     function initAudioContext() {
