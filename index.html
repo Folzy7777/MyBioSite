@@ -12,7 +12,6 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Фоновое фото framee.png */
     html, body {
       width: 100%;
       height: 100%;
@@ -24,7 +23,6 @@
       color: #fff;
     }
 
-    /* Главный контейнер строго по центру */
     .wrapper {
       display: flex;
       flex-direction: column;
@@ -35,7 +33,6 @@
       padding: 20px;
     }
 
-    /* Общий контейнер элементов шириной ровно 340px */
     .content-container {
       display: flex;
       flex-direction: column;
@@ -44,7 +41,7 @@
       margin: 0 auto;
     }
 
-    /* 1. Аватарка увеличена на 15% (104px) */
+    /* Аватарка +15% */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -55,7 +52,6 @@
       margin-bottom: 15px;
     }
 
-    /* 2. Блок плеера */
     .player-hud {
       display: flex;
       flex-direction: column;
@@ -64,12 +60,12 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка впритык к визуализатору */
+    /* Обложка смещена на 30px ниже впритык */
     .cover-wrapper {
       width: 110px;
       height: 110px;
-      margin-top: 5px;
-      margin-bottom: 2px;
+      margin-top: 35px;
+      margin-bottom: 0px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -84,7 +80,6 @@
       border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    /* Визуализатор во всю ширину 340px */
     .visualizer-box {
       width: 340px;
       height: 35px;
@@ -99,7 +94,6 @@
       height: 35px;
     }
 
-    /* Ползунок прокрутки */
     .progress-wrap {
       width: 340px;
       display: flex;
@@ -129,12 +123,12 @@
       cursor: pointer;
     }
 
-    /* Кнопки управления ровно по центру */
+    /* 3 кнопки без сердечка по центру */
     .controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 22px;
+      gap: 30px;
       width: 340px;
     }
 
@@ -162,7 +156,6 @@
       font-size: 18px;
     }
 
-    /* 3. Панели ссылок (строго 340px вровень с плеером) */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -230,7 +223,6 @@
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
       </div>
       <div class="controls">
-        <button class="ctrl-btn">♥</button>
         <button class="ctrl-btn" id="prev-btn">◄◄</button>
         <button class="ctrl-btn play-pause-btn" id="play-btn">❚❚</button>
         <button class="ctrl-btn" id="next-btn">►►</button>
@@ -255,6 +247,9 @@
 
     audio.volume = 0.5;
     audio.loop = true;
+
+    // Устанавливаем стартовую позицию 12 секунд
+    audio.currentTime = 12;
 
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
@@ -304,13 +299,26 @@
       }
     }
 
-    window.addEventListener('load', () => {
+    function startPlayback() {
+      initAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      
       audio.play().then(() => {
-        initAudioContext();
         playBtn.innerText = '❚❚';
       }).catch(() => {
         playBtn.innerText = '▶';
       });
+    }
+
+    // Автоплей при старте
+    window.addEventListener('DOMContentLoaded', startPlayback);
+    window.addEventListener('load', startPlayback);
+
+    // Подстраховка при взаимодействии с окном
+    ['click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        if (audio.paused) startPlayback();
+      }, { once: true });
     });
 
     playBtn.addEventListener('click', () => {
@@ -325,14 +333,6 @@
         playBtn.innerText = '▶';
       }
     });
-
-    document.body.addEventListener('click', () => {
-      if (audio.paused) {
-        initAudioContext();
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        audio.play().then(() => playBtn.innerText = '❚❚').catch(() => {});
-      }
-    }, { once: true });
 
     audio.addEventListener('timeupdate', () => {
       if (audio.duration) {
