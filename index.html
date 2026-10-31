@@ -20,19 +20,19 @@
       color: #fff;
     }
 
-    /* Фоновое видео */
-    #bg-video {
+    /* Фоновая гифка fon.gif */
+    .bg-gif {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      min-width: 100vw;
-      min-height: 100vh;
-      width: auto;
-      height: auto;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('fon.gif');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
       z-index: -2;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      filter: brightness(0.35) contrast(1.15);
+      filter: brightness(0.4) contrast(1.1);
     }
 
     .overlay {
@@ -41,7 +41,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%);
+      background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.8) 100%);
       z-index: -1;
     }
 
@@ -58,30 +58,30 @@
 
     /* Аватарка вверху */
     .top-avatar {
-      width: 90px;
-      height: 90px;
+      width: 95px;
+      height: 95px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 4px 25px rgba(0,0,0,0.8);
-      margin-bottom: 25px;
+      margin-bottom: 22px;
       background-color: #1a1a1f;
     }
 
-    /* Главный контейнер плеера (строго по центру) */
+    /* Плеер шире блоков с ссылками (ширина 380px) */
     .player-hud {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      max-width: 340px;
-      margin-bottom: 25px;
+      max-width: 380px;
+      margin-bottom: 22px;
     }
 
     .cover-wrapper {
       width: 65px;
       height: 65px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -97,14 +97,14 @@
       background-color: #1a1a1f;
     }
 
-    /* Визуализатор во всю ширину ползунка (340px) */
+    /* Визуализатор на всю ширину плеера (380px) */
     .visualizer-box {
       width: 100%;
-      height: 45px;
+      height: 50px;
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     #visualizer {
@@ -112,7 +112,7 @@
       height: 100%;
     }
 
-    /* Ползунок прокрутки */
+    /* Ползунок прокрутки во всю ширину */
     .progress-wrap {
       width: 100%;
       display: flex;
@@ -126,7 +126,7 @@
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       border-radius: 2px;
       outline: none;
       cursor: pointer;
@@ -142,12 +142,12 @@
       cursor: pointer;
     }
 
-    /* Кнопки управления (выравнены по центру) */
+    /* Кнопки управления строго по центру */
     .controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 25px;
+      gap: 28px;
       width: 100%;
     }
 
@@ -173,13 +173,13 @@
       font-size: 20px;
     }
 
-    /* Блок ссылок */
+    /* Панели со ссылками (компактнее плеера, ширина 330px) */
     .links-box {
       display: flex;
       flex-direction: column;
       gap: 12px;
       width: 100%;
-      max-width: 340px;
+      max-width: 330px;
     }
 
     .link-card {
@@ -209,10 +209,8 @@
 </head>
 <body>
 
-  <!-- Фоновое видео fon.mp4 -->
-  <video autoplay loop muted playsinline id="bg-video">
-    <source src="fon.mp4" type="video/mp4">
-  </video>
+  <!-- Фон гифка fon.gif -->
+  <div class="bg-gif"></div>
   <div class="overlay"></div>
 
   <div class="wrapper">
@@ -233,14 +231,14 @@
       { title: "ссылка на стим", url: "https://steamcommunity.com" }
     ];
 
-    // Генерация плеера: визуализатор -> ползунок -> кнопки
+    // Генерация плеера (холст на 380px под ширину плеера)
     const playerContainer = document.getElementById('player-container');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
         <img class="track-cover" src="oblozka.jpg" alt="Cover">
       </div>
       <div class="visualizer-box">
-        <canvas id="visualizer" width="340" height="45"></canvas>
+        <canvas id="visualizer" width="380" height="50"></canvas>
       </div>
       <div class="progress-wrap">
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
@@ -264,7 +262,7 @@
       linksContainer.appendChild(a);
     });
 
-    // Логика эквалайзера и воспроизведения
+    // Аудио и логика визуализатора
     const audio = document.getElementById('audio-player');
     const playBtn = document.getElementById('play-btn');
     const progressBar = document.getElementById('progress-bar');
@@ -283,7 +281,7 @@
         source.connect(analyser);
         analyser.connect(audioCtx.destination);
         
-        analyser.fftSize = 128; // Больше столбиков для широкого спектра
+        analyser.fftSize = 128;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         
         isAudioSetup = true;
@@ -293,7 +291,6 @@
       }
     }
 
-    // Отрисовка широкого визуализатора
     function drawVisualizer() {
       requestAnimationFrame(drawVisualizer);
       if (!analyser) return;
@@ -301,8 +298,8 @@
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const totalBars = 42; // Много тонких столбиков
-      const barWidth = 3;
+      const totalBars = 46; // Больше столбиков на всю ширину
+      const barWidth = 4;
       const gap = 4;
       const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
 
