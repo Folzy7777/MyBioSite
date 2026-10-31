@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tyrbylent Bio</title>
+  <title>Tyrbylent | Bio</title>
   <style>
     * {
       box-sizing: border-box;
@@ -20,7 +20,6 @@
       color: #fff;
     }
 
-    /* Фоновое видео (fon.mp4) */
     #bg-video {
       position: fixed;
       top: 0;
@@ -49,9 +48,10 @@
       justify-content: center;
       min-height: 100vh;
       padding: 15px;
+      position: relative;
+      z-index: 2;
     }
 
-    /* Аватарка вверху (avatar.png) */
     .top-avatar {
       width: 95px;
       height: 95px;
@@ -63,7 +63,6 @@
       background-color: #222;
     }
 
-    /* HUD плеера */
     .player-hud {
       display: flex;
       flex-direction: column;
@@ -92,7 +91,6 @@
       pointer-events: none;
     }
 
-    /* Обложка трека (oblozka.jpg) */
     .track-cover {
       width: 62px;
       height: 62px;
@@ -193,15 +191,145 @@
 </head>
 <body>
 
-  <!-- Фоновое видео (fon.mp4) -->
+  <!-- Фоновое видео с запасным вариантом -->
   <video autoplay loop muted playsinline id="bg-video">
     <source src="fon.mp4" type="video/mp4">
   </video>
   <div class="overlay"></div>
 
   <div class="wrapper">
-    <!-- Аватарка вверху (avatar.png) -->
     <img class="top-avatar" src="avatar.png" alt="Avatar">
     
     <div class="player-hud" id="player-container"></div>
     <div class="links-box" id="links-container"></div>
+  </div>
+
+  <audio id="audio-player" loop crossorigin="anonymous">
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Ссылки
+    const links = [
+      { title: "ссылка на тик ток", url: "https://tiktok.com" },
+      { title: "ссылка на дискорд", url: "https://discord.gg" },
+      { title: "ссылка на стим", url: "https://steamcommunity.com" }
+    ];
+
+    // Генерируем плеер в любом случае
+    const playerContainer = document.getElementById('player-container');
+    playerContainer.innerHTML = `
+      <div class="cover-wrapper">
+        <canvas id="visualizer"></canvas>
+        <img class="track-cover" src="oblozka.jpg" alt="Cover">
+      </div>
+      <div class="progress-wrap">
+        <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn">♥</button>
+        <button class="ctrl-btn" id="prev-btn">◄◄</button>
+        <button class="ctrl-btn play-pause-btn" id="play-btn">❚❚</button>
+        <button class="ctrl-btn" id="next-btn">►►</button>
+      </div>
+    `;
+
+    // Генерируем ссылки
+    const linksContainer = document.getElementById('links-container');
+    links.forEach(item => {
+      const a = document.createElement('a');
+      a.className = 'link-card';
+      a.href = item.url;
+      a.target = '_blank';
+      a.innerText = item.title;
+      linksContainer.appendChild(a);
+    });
+
+    // Плеер и аудио логика
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+
+    let audioCtx, analyser, source, dataArray;
+    let isAudioSetup = false;
+
+    function initAudioContext() {
+      if (isAudioSetup) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        analyser.fftSize = 32;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        isAudioSetup = true;
+        drawVisualizer();
+      } catch (e) {
+        console.log("Audio context error:", e);
+      }
+    }
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = 6;
+      const gap = 4;
+      const totalBars = 12;
+      const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
+
+      for (let i = 0; i < totalBars; i++) {
+        const value = dataArray[i] || 0;
+        const barHeight = (value / 255) * (canvas.height * 0.7);
+        const x = startX + i * (barWidth + gap);
+        const y = (canvas.height / 2) - (barHeight / 2);
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + (value / 255) * 0.6})`;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 4), 3);
+        ctx.fill();
+      }
+    }
+
+    playBtn.addEventListener('click', () => {
+      initAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerText = '❚❚';
+      } else {
+        audio.pause();
+        playBtn.innerText = '▶';
+      }
+    });
+
+    document.body.addEventListener('click', () => {
+      if (audio.paused) {
+        initAudioContext();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        audio.play().then(() => playBtn.innerText = '❚❚').catch(() => {});
+      }
+    }, { once: true });
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+      }
+    });
+
+    progressBar.addEventListener('input', () => {
+      if (audio.duration) {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      }
+    });
+  </script>
+
+</body>
+</html>
