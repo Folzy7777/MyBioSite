@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tyrbylent | Bio</title>
   <style>
-    @import url(\'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap\');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,700&display=swap');
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: \'Inter\', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     html, body {
@@ -22,27 +22,29 @@
       overflow: hidden;
       background: #000;
       color: #fff;
-      scroll-behavior: smooth;
     }
 
-    /* Фон — ПОЛНОСТЬЮ ИНЛАЙН, ЧТОБЫ НЕ БЫЛО ОШИБОК */
-    #bg-img {
+    /* Фоновое фото framee.png с пульсацией под басы */
+    .bg-image {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: url(\'./framee.png\') no-repeat center center;
+      width: 100vw;
+      height: 100vh;
+      background: url('framee.png') no-repeat center center;
       background-size: cover;
       z-index: 0;
+      will-change: transform;
+      transition: transform 0.04s ease-out;
     }
 
+    /* Холст для снега и следа мыши */
     #snow-canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       pointer-events: none;
       z-index: 1;
     }
@@ -53,7 +55,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      width: 100%;
+      width: 100vw;
       padding: 20px;
       position: relative;
       z-index: 2;
@@ -66,36 +68,28 @@
       align-items: center;
       width: 340px;
       margin: 0 auto;
-      gap: 20px;
     }
 
     .tilt-card {
-      transition: 
-        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
       will-change: transform;
     }
 
+    /* Аватарка со свечением и 3D */
     .top-avatar {
-      width: 120px;
-      height: 120px;
+      width: 104px;
+      height: 104px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 
-        0 4px 25px rgba(0,0,0,0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
-      margin-bottom: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.8);
+      margin-bottom: 15px;
       cursor: pointer;
     }
 
     .top-avatar:hover, .tilt-card:hover {
-      border-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 
-        0 12px 40px rgba(255, 255, 255, 0.25),
-        0 0 0 2px rgba(255, 255, 255, 0.15);
-      transform: scale(1.03);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
     }
 
     .player-hud {
@@ -103,13 +97,15 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
+    /* Обложка трека */
     .cover-wrapper {
-      width: 120px;
-      height: 120px;
-      margin-top: 40px;
+      width: 110px;
+      height: 110px;
+      margin-top: 35px;
+      margin-bottom: 0px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -117,14 +113,12 @@
     }
 
     .track-cover {
-      width: 120px;
-      height: 120px;
-      border-radius: 16px;
+      width: 110px;
+      height: 110px;
+      border-radius: 10px;
       object-fit: cover;
-      box-shadow: 
-        0 6px 30px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.9);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       will-change: transform, box-shadow;
       cursor: pointer;
     }
@@ -136,13 +130,11 @@
       justify-content: center;
       align-items: flex-end;
       margin-bottom: 2px;
-      filter: blur(0.5px);
     }
 
     #visualizer {
       width: 340px;
       height: 35px;
-      border-radius: 4px;
     }
 
     .progress-wrap {
@@ -150,7 +142,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .progress-bar {
@@ -158,50 +150,36 @@
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
       outline: none;
       cursor: pointer;
-      transition: background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .progress-bar::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 
-        0 0 15px rgba(255, 255, 255, 0.8),
-        0 0 0 2px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    .progress-bar::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 
-        0 0 20px rgba(255, 255, 255, 0.9),
-        0 0 0 2px rgba(0, 0, 0, 0.4);
-    }
-
-    .progress-bar:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
+    /* Жестко фиксируем ширину 340px и запрещаем перенос строк для кнопок */
     .controls {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 20px;
+      gap: 16px;
       width: 340px;
     }
 
     .ctrl-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 50%;
       color: #fff;
       font-size: 13px;
@@ -210,41 +188,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       flex-shrink: 0;
-      transition: 
-        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 
-        0 0 20px rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
-
-    .ctrl-btn:active {
-      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
     }
 
     .play-pause-btn {
-      font-size: 16px;
-      width: 48px;
-      height: 48px;
+      font-size: 14px;
     }
 
+    /* Плашки ссылок с текстурой инея и капель */
     .links-box {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       width: 340px;
     }
 
@@ -253,49 +218,76 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 18px 20px;
-      background: rgba(255, 255, 255, 0.08);
+      padding: 14px 15px;
+      background: rgba(255, 255, 255, 0.14);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
       color: #fff;
       text-decoration: none;
-      font-family: \'Inter\', sans-serif;
-      font-weight: 500;
-      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 750;
+      font-style: italic;
+      font-size: 13.5px;
       letter-spacing: 0.2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 
-        0 8px 25px rgba(0,0,0,0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
-      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      transform-style: preserve-3d;
+    }
+
+    .link-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.35) 2px, transparent 2.5px),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.45) 2.5px, transparent 3px),
+        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.3) 1px, transparent 2px),
+        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
+      opacity: 0.65;
+      pointer-events: none;
+      border-radius: 12px;
+    }
+
+    .link-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 45%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 55%
+      );
+      transform: rotate(30deg) translateX(-100%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    .link-card:hover::after {
+      transform: rotate(30deg) translateX(100%);
     }
 
     .link-card:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      box-shadow: 
-        0 12px 35px rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.24);
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
     }
   </style>
 </head>
 <body>
 
-  <!-- ФОН — ПОЛНОСТЬЮ ИНЛАЙН, ЧТОБЫ НЕТ ОШИБОК -->
-  <div 
-    id="bg-img" 
-    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url(\'./framee.png\') no-repeat center center; background-size: cover; z-index: 0;"
-  ></div>
-
+  <div class="bg-image" id="bg-img"></div>
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
     <div class="content-container">
-      <img class="top-avatar tilt-card" src="./avatar.png" alt="Avatar" data-tilt>
+      <img class="top-avatar tilt-card" src="avatar.png" alt="Avatar" data-tilt>
       
       <div class="player-hud" id="player-container"></div>
       
@@ -304,7 +296,7 @@
   </div>
 
   <audio id="audio-player" loop autoplay crossorigin="anonymous">
-    <source src="./music.mp3" type="audio/mpeg">
+    <source src="Music.mp3" type="audio/mpeg">
   </audio>
 
   <script>
@@ -314,10 +306,10 @@
       { title: "steam.com/tyrbylentnost", url: "https://steamcommunity.com/profiles/76561198884991493/" }
     ];
 
-    const playerContainer = document.getElementById(\'player-container\');
+    const playerContainer = document.getElementById('player-container');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
-        <img class="track-cover tilt-card" id="track-cover" src="./oblozka.jpg" alt="Cover" data-tilt>
+        <img class="track-cover tilt-card" id="track-cover" src="oblozka.jpg" alt="Cover" data-tilt>
       </div>
       <div class="visualizer-box">
         <canvas id="visualizer" width="340" height="35"></canvas>
@@ -326,30 +318,30 @@
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
       </div>
       <div class="controls">
-        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◀◀</button>
+        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◄◄</button>
         <button class="ctrl-btn play-pause-btn tilt-card" id="play-btn" data-tilt>❚❚</button>
-        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>▶▶</button>
+        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>►►</button>
       </div>
     `;
 
-    const linksContainer = document.getElementById(\'links-container\');
+    const linksContainer = document.getElementById('links-container');
     links.forEach(item => {
-      const a = document.createElement(\'a\');
-      a.className = \'link-card tilt-card\';
+      const a = document.createElement('a');
+      a.className = 'link-card tilt-card';
       a.href = item.url;
-      a.target = \'_blank\';
+      a.target = '_blank';
       a.innerText = item.title;
-      a.setAttribute(\'data-tilt\', \'\');
+      a.setAttribute('data-tilt', '');
       linksContainer.appendChild(a);
     });
 
-    const audio = document.getElementById(\'audio-player\');
-    const playBtn = document.getElementById(\'play-btn\');
-    const progressBar = document.getElementById(\'progress-bar\');
-    const canvas = document.getElementById(\'visualizer\');
-    const ctx = canvas.getContext(\'2d\');
-    const trackCover = document.getElementById(\'track-cover\');
-    const bgImg = document.getElementById(\'bg-img\');
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const trackCover = document.getElementById('track-cover');
+    const bgImg = document.getElementById('bg-img');
 
     audio.volume = 0.5;
     audio.loop = true;
@@ -392,14 +384,14 @@
       const bassAvg = bassSum / 5;
       const bassRatio = bassAvg / 255;
 
-      const scaleCover = 1 + (bassRatio * 0.15); 
-      const scaleBg = 1 + (bassRatio * 0.03);    
-      const glowBlur = 15 + (bassRatio * 30);     
+      const scaleCover = 1 + (bassRatio * 0.18); 
+      const scaleBg = 1 + (bassRatio * 0.045);    
+      const glowBlur = 20 + (bassRatio * 40);     
 
-      if(!trackCover.classList.contains(\'is-hovered\')) {
+      if(!trackCover.classList.contains('is-hovered')) {
         trackCover.style.transform = `scale(${scaleCover})`;
       }
-      trackCover.style.boxShadow = `0 6px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.5}), 0 0 0 1px rgba(255, 255, 255, 0.1)`;
+      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.6}), 0 4px 20px rgba(0,0,0,0.9)`;
       bgImg.style.transform = `scale(${scaleBg})`;
 
       const totalBars = 36;
@@ -415,114 +407,114 @@
 
         ctx.fillStyle = `rgba(255, 255, 255, ${0.45 + (value / 255) * 0.55})`;
         ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 4);
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 2);
         ctx.fill();
       }
     }
 
     function startPlayback() {
       initAudioContext();
-      if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       
       audio.play().then(() => {
-        playBtn.innerText = \'❚❚\';
+        playBtn.innerText = '❚❚';
       }).catch(() => {
-        playBtn.innerText = \'▶\';
+        playBtn.innerText = '▶';
       });
     }
 
-    window.addEventListener(\'DOMContentLoaded\', startPlayback);
-    window.addEventListener(\'load\', startPlayback);
+    window.addEventListener('DOMContentLoaded', startPlayback);
+    window.addEventListener('load', startPlayback);
 
-    [\'click\', \'mousemove\', \'keydown\', \'touchstart\'].forEach(evt => {
+    ['click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
       window.addEventListener(evt, () => {
         if (audio.paused) startPlayback();
       }, { once: true });
     });
 
-    playBtn.addEventListener(\'click\', () => {
+    playBtn.addEventListener('click', () => {
       initAudioContext();
-      if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
       if (audio.paused) {
         audio.play();
-        playBtn.innerText = \'❚❚\';
+        playBtn.innerText = '❚❚';
       } else {
         audio.pause();
-        playBtn.innerText = \'▶\';
+        playBtn.innerText = '▶';
       }
     });
 
-    audio.addEventListener(\'timeupdate\', () => {
+    audio.addEventListener('timeupdate', () => {
       if (audio.duration) {
         progressBar.value = (audio.currentTime / audio.duration) * 100;
       }
     });
 
-    progressBar.addEventListener(\'input\', () => {
+    progressBar.addEventListener('input', () => {
       if (audio.duration) {
         audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
     });
 
     /* --- 3D TILT EFFECT --- */
-    document.querySelectorAll(\'[data-tilt]\').forEach(card => {
-      card.addEventListener(\'mouseenter\', () => card.classList.add(\'is-hovered\'));
-      card.addEventListener(\'mousemove\', (e) => {
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
+      card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -10;
-        const rotateY = ((x - centerX) / centerX) * 10;
+        const rotateX = ((y - centerY) / centerY) * -12;
+        const rotateY = ((x - centerX) / centerX) * 12;
 
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.03)`;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
       });
 
-      card.addEventListener(\'mouseleave\', () => {
-        card.classList.remove(\'is-hovered\');
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-hovered');
         card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
       });
     });
 
     /* --- СНЕГ И ШЛЕЙФ --- */
-    const snowCanvas = document.getElementById(\'snow-canvas\');
-    const sCtx = snowCanvas.getContext(\'2d\');
+    const snowCanvas = document.getElementById('snow-canvas');
+    const sCtx = snowCanvas.getContext('2d');
 
     function resizeSnowCanvas() {
       snowCanvas.width = window.innerWidth;
       snowCanvas.height = window.innerHeight;
     }
     resizeSnowCanvas();
-    window.addEventListener(\'resize\', resizeSnowCanvas);
+    window.addEventListener('resize', resizeSnowCanvas);
 
     const snowFlakes = [];
-    const maxFlakes = 60;
+    const maxFlakes = 55;
 
     for (let i = 0; i < maxFlakes; i++) {
       snowFlakes.push({
         x: Math.random() * snowCanvas.width,
         y: Math.random() * snowCanvas.height,
-        r: Math.random() * 3 + 1.5,
-        speedY: Math.random() * 1.2 + 0.5,
-        speedX: Math.random() * 0.8 - 0.4,
-        opacity: Math.random() * 0.7 + 0.3
+        r: Math.random() * 2.5 + 1,
+        speedY: Math.random() * 0.8 + 0.3,
+        speedX: Math.random() * 0.5 - 0.25,
+        opacity: Math.random() * 0.6 + 0.3
       });
     }
 
-    const mouseTail = [];
+    const mouseTrail = [];
 
-    window.addEventListener(\'mousemove\', (e) => {
-      for (let i = 0; i < 2; i++) {
-        mouseTail.push({
+    window.addEventListener('mousemove', (e) => {
+      for (let i = 0; i < 3; i++) {
+        mouseTrail.push({
           x: e.clientX,
           y: e.clientY,
-          vx: (Math.random() - 0.5) * 1.8,
-          vy: Math.random() * 1.5 + 0.6,
-          r: Math.random() * 2.5 + 1.5,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: Math.random() * 1.2 + 0.4,
+          r: Math.random() * 2 + 1,
           life: 1,
-          decay: Math.random() * 0.03 + 0.02
+          decay: Math.random() * 0.02 + 0.015
         });
       }
     });
@@ -546,18 +538,18 @@
         sCtx.fill();
       });
 
-      for (let i = mouseTail.length - 1; i >= 0; i--) {
-        const p = mouseTail[i];
+      for (let i = mouseTrail.length - 1; i >= 0; i--) {
+        const p = mouseTrail[i];
         p.x += p.vx;
         p.y += p.vy;
         p.life -= p.decay;
 
         if (p.life <= 0) {
-          mouseTail.splice(i, 1);
+          mouseTrail.splice(i, 1);
           continue;
         }
 
-        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.7})`;
+        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.8})`;
         sCtx.beginPath();
         sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         sCtx.fill();
