@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tyrbylent | Bio</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,700&display=swap');
+    @import url(\'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap\');
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: \'Inter\', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     html, body {
@@ -22,23 +22,26 @@
       overflow: hidden;
       background: #000;
       color: #fff;
+      scroll-behavior: smooth;
     }
 
-    /* Фоновое фото framee.png с пульсацией под басы */
+    /* Премиум фон с градиентом и текстурой */
     .bg-image {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: url('framee.png') no-repeat center center;
-      background-size: cover;
+      background: 
+        radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%),
+        linear-gradient(135deg, #0a0a0a 0%, #000000 100%);
       z-index: 0;
       will-change: transform;
-      transition: transform 0.04s ease-out;
+      transition: transform 0.04s cubic-bezier(0.25, 0.1, 0.25, 1);
+      background-blend-mode: overlay;
     }
 
-    /* Холст для снега и следа мыши */
+    /* Снежный эффект с плавностью */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -59,7 +62,7 @@
       padding: 20px;
       position: relative;
       z-index: 2;
-      perspective: 1000px;
+      perspective: 2000px;
     }
 
     .content-container {
@@ -68,28 +71,40 @@
       align-items: center;
       width: 340px;
       margin: 0 auto;
+      gap: 20px;
     }
 
     .tilt-card {
-      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
+      transition: 
+        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
       will-change: transform;
     }
 
-    /* Аватарка со свечением и 3D */
+    /* Премиум аватар с улучшенным свечением */
     .top-avatar {
-      width: 104px;
-      height: 104px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 4px 25px rgba(0,0,0,0.8);
-      margin-bottom: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 4px 25px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
       cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .top-avatar:hover, .tilt-card:hover {
-      border-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 12px 40px rgba(255, 255, 255, 0.25),
+        0 0 0 2px rgba(255, 255, 255, 0.15),
+        inset 0 0 30px rgba(255, 255, 255, 0.15);
+      transform: scale(1.03);
     }
 
     .player-hud {
@@ -97,30 +112,35 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
-    /* Обложка трека */
+    /* Градиентная обложка трека */
     .cover-wrapper {
-      width: 110px;
-      height: 110px;
-      margin-top: 35px;
+      width: 120px;
+      height: 120px;
+      margin-top: 40px;
       margin-bottom: 0px;
       display: flex;
       justify-content: center;
       align-items: center;
-      perspective: 1000px;
+      perspective: 2000px;
+      position: relative;
     }
 
     .track-cover {
-      width: 110px;
-      height: 110px;
-      border-radius: 10px;
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
       object-fit: cover;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.9);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 
+        0 6px 30px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 0 15px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       will-change: transform, box-shadow;
       cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .visualizer-box {
@@ -130,11 +150,13 @@
       justify-content: center;
       align-items: flex-end;
       margin-bottom: 2px;
+      filter: blur(0.5px);
     }
 
     #visualizer {
       width: 340px;
       height: 35px;
+      border-radius: 4px;
     }
 
     .progress-wrap {
@@ -142,7 +164,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .progress-bar {
@@ -150,36 +172,51 @@
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
       outline: none;
       cursor: pointer;
+      transition: background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .progress-bar::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.8),
+        0 0 0 2px rgba(0, 0, 0, 0.3);
       cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    /* Жестко фиксируем ширину 340px и запрещаем перенос строк для кнопок */
+    .progress-bar::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.9),
+        0 0 0 2px rgba(0, 0, 0, 0.4);
+    }
+
+    .progress-bar:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Премиум кнопки с Apple-стилем */
     .controls {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 20px;
       width: 340px;
     }
 
     .ctrl-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 50%;
       color: #fff;
       font-size: 13px;
@@ -188,28 +225,57 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       flex-shrink: 0;
-      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s, border-color 0.2s;
+      transition: 
+        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ctrl-btn::before {
+      content: \'\';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      pointer-events: none;
+      border-radius: 50%;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
-      background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.3),
+        0 0 0 2px rgba(255, 255, 255, 0.1);
+      transform: scale(1.1);
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.95);
     }
 
     .play-pause-btn {
-      font-size: 14px;
+      font-size: 16px;
+      width: 48px;
+      height: 48px;
     }
 
-    /* Плашки ссылок с текстурой инея и капель */
+    /* Премиум карточки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       width: 340px;
     }
 
@@ -218,70 +284,66 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 15px;
-      background: rgba(255, 255, 255, 0.14);
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
       color: #fff;
       text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      font-weight: 750;
-      font-style: italic;
-      font-size: 13.5px;
+      font-family: \'Inter\', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
       letter-spacing: 0.2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      box-shadow: 
+        0 8px 25px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
       transform-style: preserve-3d;
-    }
-
-    .link-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.35) 2px, transparent 2.5px),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
-        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.45) 2.5px, transparent 3px),
-        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.3) 1px, transparent 2px),
-        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
-      opacity: 0.65;
-      pointer-events: none;
-      border-radius: 12px;
-    }
-
-    .link-card::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent 45%,
-        rgba(255, 255, 255, 0.2) 50%,
-        transparent 55%
-      );
-      transform: rotate(30deg) translateX(-100%);
-      transition: transform 0.6s ease;
-      pointer-events: none;
-    }
-
-    .link-card:hover::after {
-      transform: rotate(30deg) translateX(100%);
+      transition: 
+        all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     .link-card:hover {
-      background: rgba(255, 255, 255, 0.24);
-      border-color: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 
+        0 12px 35px rgba(255, 255, 255, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Анимации текстуры */
+    .link-card::after {
+      content: \'\';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 10% 50%, rgba(255,255,255,0.3) 1px, transparent 2px),
+        radial-gradient(circle at 90% 50%, rgba(255,255,255,0.2) 1px, transparent 2px),
+        linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+      opacity: 0.7;
+      pointer-events: none;
+      border-radius: 16px;
+    }
+
+    .link-card:hover::after {
+      background: 
+        radial-gradient(circle at 30% 70%, rgba(255,255,255,0.4) 1px, transparent 2px),
+        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.3) 1px, transparent 2px),
+        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%);
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
-
   <div class="bg-image" id="bg-img"></div>
   <canvas id="snow-canvas"></canvas>
 
@@ -306,7 +368,7 @@
       { title: "steam.com/tyrbylentnost", url: "https://steamcommunity.com/profiles/76561198884991493/" }
     ];
 
-    const playerContainer = document.getElementById('player-container');
+    const playerContainer = document.getElementById(\'player-container\');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
         <img class="track-cover tilt-card" id="track-cover" src="oblozka.jpg" alt="Cover" data-tilt>
@@ -318,30 +380,30 @@
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
       </div>
       <div class="controls">
-        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◄◄</button>
+        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◀◀</button>
         <button class="ctrl-btn play-pause-btn tilt-card" id="play-btn" data-tilt>❚❚</button>
-        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>►►</button>
+        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>▶▶</button>
       </div>
     `;
 
-    const linksContainer = document.getElementById('links-container');
+    const linksContainer = document.getElementById(\'links-container\');
     links.forEach(item => {
-      const a = document.createElement('a');
-      a.className = 'link-card tilt-card';
+      const a = document.createElement(\'a\');
+      a.className = \'link-card tilt-card\';
       a.href = item.url;
-      a.target = '_blank';
+      a.target = \'_blank\';
       a.innerText = item.title;
-      a.setAttribute('data-tilt', '');
+      a.setAttribute(\'data-tilt\', \'\');
       linksContainer.appendChild(a);
     });
 
-    const audio = document.getElementById('audio-player');
-    const playBtn = document.getElementById('play-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const canvas = document.getElementById('visualizer');
-    const ctx = canvas.getContext('2d');
-    const trackCover = document.getElementById('track-cover');
-    const bgImg = document.getElementById('bg-img');
+    const audio = document.getElementById(\'audio-player\');
+    const playBtn = document.getElementById(\'play-btn\');
+    const progressBar = document.getElementById(\'progress-bar\');
+    const canvas = document.getElementById(\'visualizer\');
+    const ctx = canvas.getContext(\'2d\');
+    const trackCover = document.getElementById(\'track-cover\');
+    const bgImg = document.getElementById(\'bg-img\');
 
     audio.volume = 0.5;
     audio.loop = true;
@@ -384,14 +446,15 @@
       const bassAvg = bassSum / 5;
       const bassRatio = bassAvg / 255;
 
-      const scaleCover = 1 + (bassRatio * 0.18); 
-      const scaleBg = 1 + (bassRatio * 0.045);    
-      const glowBlur = 20 + (bassRatio * 40);     
+      // Улучшенные премиум эффекты
+      const scaleCover = 1 + (bassRatio * 0.15); 
+      const scaleBg = 1 + (bassRatio * 0.03);    
+      const glowBlur = 15 + (bassRatio * 30);     
 
-      if(!trackCover.classList.contains('is-hovered')) {
+      if(!trackCover.classList.contains(\'is-hovered\')) {
         trackCover.style.transform = `scale(${scaleCover})`;
       }
-      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.6}), 0 4px 20px rgba(0,0,0,0.9)`;
+      trackCover.style.boxShadow = `0 6px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.5}), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.05)`;
       bgImg.style.transform = `scale(${scaleBg})`;
 
       const totalBars = 36;
@@ -399,122 +462,128 @@
       const gap = 5;
       const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
 
+      // Улучшенный визуализатор с градиентом
       for (let i = 0; i < totalBars; i++) {
         const value = dataArray[i + 3] || dataArray[i] || 0;
         const barHeight = (value / 255) * canvas.height;
         const x = startX + i * (barWidth + gap);
         const y = canvas.height - barHeight;
 
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.45 + (value / 255) * 0.55})`;
+        // Премиум градиент для баров
+        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${0.7 + (value / 255) * 0.3})`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, ${0.4 + (value / 255) * 0.3})`);
+        
+        ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 2);
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 4);
         ctx.fill();
       }
     }
 
     function startPlayback() {
       initAudioContext();
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
       
       audio.play().then(() => {
-        playBtn.innerText = '❚❚';
+        playBtn.innerText = \'❚❚\';
       }).catch(() => {
-        playBtn.innerText = '▶';
+        playBtn.innerText = \'▶\';
       });
     }
 
-    window.addEventListener('DOMContentLoaded', startPlayback);
-    window.addEventListener('load', startPlayback);
+    window.addEventListener(\'DOMContentLoaded\', startPlayback);
+    window.addEventListener(\'load\', startPlayback);
 
-    ['click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
+    [\'click\', \'mousemove\', \'keydown\', \'touchstart\'].forEach(evt => {
       window.addEventListener(evt, () => {
         if (audio.paused) startPlayback();
       }, { once: true });
     });
 
-    playBtn.addEventListener('click', () => {
+    playBtn.addEventListener(\'click\', () => {
       initAudioContext();
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx && audioCtx.state === \'suspended\') audioCtx.resume();
 
       if (audio.paused) {
         audio.play();
-        playBtn.innerText = '❚❚';
+        playBtn.innerText = \'❚❚\';
       } else {
         audio.pause();
-        playBtn.innerText = '▶';
+        playBtn.innerText = \'▶\';
       }
     });
 
-    audio.addEventListener('timeupdate', () => {
+    audio.addEventListener(\'timeupdate\', () => {
       if (audio.duration) {
         progressBar.value = (audio.currentTime / audio.duration) * 100;
       }
     });
 
-    progressBar.addEventListener('input', () => {
+    progressBar.addEventListener(\'input\', () => {
       if (audio.duration) {
         audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
     });
 
     /* --- 3D TILT EFFECT --- */
-    document.querySelectorAll('[data-tilt]').forEach(card => {
-      card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
-      card.addEventListener('mousemove', (e) => {
+    document.querySelectorAll(\'[data-tilt]\').forEach(card => {
+      card.addEventListener(\'mouseenter\', () => card.classList.add(\'is-hovered\'));
+      card.addEventListener(\'mousemove\', (e) => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -12;
-        const rotateY = ((x - centerX) / centerX) * 12;
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
 
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
+        card.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.03)`;
       });
 
-      card.addEventListener('mouseleave', () => {
-        card.classList.remove('is-hovered');
-        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
+      card.addEventListener(\'mouseleave\', () => {
+        card.classList.remove(\'is-hovered\');
+        card.style.transform = `perspective(2000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
       });
     });
 
     /* --- СНЕГ И ШЛЕЙФ --- */
-    const snowCanvas = document.getElementById('snow-canvas');
-    const sCtx = snowCanvas.getContext('2d');
+    const snowCanvas = document.getElementById(\'snow-canvas\');
+    const sCtx = snowCanvas.getContext(\'2d\');
 
     function resizeSnowCanvas() {
       snowCanvas.width = window.innerWidth;
       snowCanvas.height = window.innerHeight;
     }
     resizeSnowCanvas();
-    window.addEventListener('resize', resizeSnowCanvas);
+    window.addEventListener(\'resize\', resizeSnowCanvas);
 
     const snowFlakes = [];
-    const maxFlakes = 55;
+    const maxFlakes = 60;
 
     for (let i = 0; i < maxFlakes; i++) {
       snowFlakes.push({
         x: Math.random() * snowCanvas.width,
         y: Math.random() * snowCanvas.height,
-        r: Math.random() * 2.5 + 1,
-        speedY: Math.random() * 0.8 + 0.3,
-        speedX: Math.random() * 0.5 - 0.25,
-        opacity: Math.random() * 0.6 + 0.3
+        r: Math.random() * 3 + 1.5,
+        speedY: Math.random() * 1.2 + 0.5,
+        speedX: Math.random() * 0.8 - 0.4,
+        opacity: Math.random() * 0.7 + 0.3
       });
     }
 
     const mouseTrail = [];
 
-    window.addEventListener('mousemove', (e) => {
-      for (let i = 0; i < 3; i++) {
+    window.addEventListener(\'mousemove\', (e) => {
+      for (let i = 0; i < 2; i++) {
         mouseTrail.push({
           x: e.clientX,
           y: e.clientY,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: Math.random() * 1.2 + 0.4,
-          r: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * 1.8,
+          vy: Math.random() * 1.5 + 0.6,
+          r: Math.random() * 2.5 + 1.5,
           life: 1,
-          decay: Math.random() * 0.02 + 0.015
+          decay: Math.random() * 0.03 + 0.02
         });
       }
     });
@@ -549,7 +618,7 @@
           continue;
         }
 
-        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.8})`;
+        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.7})`;
         sCtx.beginPath();
         sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         sCtx.fill();
@@ -558,6 +627,5 @@
 
     animateSnow();
   </script>
-
 </body>
 </html>
