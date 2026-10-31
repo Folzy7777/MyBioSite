@@ -378,7 +378,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Плашки ссылок с красивым красным неоновым свечением при наведении */
+    /* Плашки ссылок с неоном */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -550,6 +550,82 @@
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
 
+    // --- ЗВУКОВОЙ ДВИЖОК НА WEB AUDIO API ---
+    let soundCtx = null;
+
+    function getSoundContext() {
+      if (!soundCtx) {
+        soundCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (soundCtx.state === 'suspended') {
+        soundCtx.resume();
+      }
+      return soundCtx;
+    }
+
+    // Дорогой микро-клик (чистый высокочастотный тик)
+    function playUiClickSound() {
+      try {
+        const ctx = getSoundContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
+
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    // Звук «вибрации/трещотки» (трррууу) при перетаскивании ползунка
+    let lastVibrateTime = 0;
+    function playVibrateSound() {
+      try {
+        const now = Date.now();
+        if (now - lastVibrateTime < 45) return; // Ограничение частоты срабатывания
+        lastVibrateTime = now;
+
+        const ctx = getSoundContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(90, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, ctx.currentTime + 0.03);
+
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.03);
+      } catch (e) {}
+    }
+
+    // Привязываем звуки кликов ко всем кнопкам и ссылкам
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('click', playUiClickSound);
+    });
+
+    // Привязываем звук трещотки к ползунку
+    progressBar.addEventListener('input', () => {
+      playVibrateSound();
+      if (audio.duration) {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      }
+    });
+    // ----------------------------------------
+
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let cursorX = mouseX;
@@ -563,12 +639,10 @@
     });
 
     function updateCursorAndParallax() {
-      // Курсор следует мгновенно для идеальной точности
       cursorX = mouseX;
       cursorY = mouseY;
       cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
 
-      // Параллакс фона
       const targetBgX = (mouseX / window.innerWidth - 0.5) * -25;
       const targetBgY = (mouseY / window.innerHeight - 0.5) * -25;
       bgX += (targetBgX - bgX) * 0.1;
@@ -656,6 +730,7 @@
       e.stopPropagation();
       introScreen.classList.add('hide');
       initAudioContext();
+      getSoundContext(); // инициализируем звуковой движок по клику
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
@@ -683,14 +758,8 @@
     });
 
     audio.addEventListener('timeupdate', () => {
-      if (audio.duration) {
+      if (audio.duration && document.activeElement !== progressBar) {
         progressBar.value = (audio.currentTime / audio.duration) * 100;
-      }
-    });
-
-    progressBar.addEventListener('input', () => {
-      if (audio.duration) {
-        audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
     });
 
