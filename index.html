@@ -20,9 +20,22 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: url('framee.png') no-repeat center center fixed;
-      background-size: cover;
+      background: #000;
       color: #fff;
+    }
+
+    /* Фоновое фото framee.png с пульсацией басов */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('framee.png') no-repeat center center;
+      background-size: cover;
+      z-index: 0;
+      will-change: transform;
+      transition: transform 0.05s ease-out;
     }
 
     /* Холст для снега и следа мыши */
@@ -46,6 +59,7 @@
       padding: 20px;
       position: relative;
       z-index: 2;
+      perspective: 1000px; /* Включаем 3D-пространство */
     }
 
     .content-container {
@@ -56,7 +70,13 @@
       margin: 0 auto;
     }
 
-    /* Аватарка */
+    /* Базовый класс для 3D-карточек */
+    .tilt-card {
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
+      will-change: transform;
+    }
+
+    /* Аватарка с 3D эффектом */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -65,14 +85,7 @@
       border: 2px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 4px 25px rgba(0,0,0,0.8);
       margin-bottom: 15px;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
-    }
-
-    .top-avatar:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
-      border-color: rgba(255, 255, 255, 0.8);
     }
 
     .player-hud {
@@ -83,7 +96,7 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка трека */
+    /* Обложка трека с пульсацией басов и 3D */
     .cover-wrapper {
       width: 110px;
       height: 110px;
@@ -92,6 +105,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      perspective: 1000px;
     }
 
     .track-cover {
@@ -101,14 +115,8 @@
       object-fit: cover;
       box-shadow: 0 4px 20px rgba(0,0,0,0.9);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      will-change: transform, box-shadow;
       cursor: pointer;
-    }
-
-    .track-cover:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35), 0 4px 20px rgba(0,0,0,0.9);
-      border-color: rgba(255, 255, 255, 0.8);
     }
 
     .visualizer-box {
@@ -154,7 +162,6 @@
       cursor: pointer;
     }
 
-    /* Все 3 кнопки ровно в один ряд */
     .controls {
       display: flex;
       flex-direction: row;
@@ -173,18 +180,17 @@
       font-size: 14px;
       cursor: pointer;
       opacity: 0.9;
-      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
       display: flex;
       align-items: center;
       justify-content: center;
       width: 32px;
       height: 32px;
       flex-shrink: 0;
+      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
-      transform: translateY(-3px) scale(1.1);
       background: rgba(255, 255, 255, 0.22);
       border-color: rgba(255, 255, 255, 0.6);
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
@@ -194,7 +200,7 @@
       font-size: 15px;
     }
 
-    /* Плашки ссылок */
+    /* Плашки ссылок с текстурой морозного инея и капель */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -203,14 +209,15 @@
     }
 
     .link-card {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 14px 15px;
-      background: rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 12px;
       color: #fff;
       text-decoration: none;
@@ -222,25 +229,62 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      transform-style: preserve-3d;
+    }
+
+    /* Текстура инея и капель поверх плашки */
+    .link-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.35) 2px, transparent 2.5px),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.45) 2.5px, transparent 3px),
+        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.3) 1px, transparent 2px),
+        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
+      opacity: 0.65;
+      pointer-events: none;
+      border-radius: 12px;
+    }
+
+    /* Эффект блика / преломления света капелек при наведении */
+    .link-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 45%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 55%
+      );
+      transform: rotate(30deg) translateX(-100%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    .link-card:hover::after {
+      transform: rotate(30deg) translateX(100%);
     }
 
     .link-card:hover {
-      background: rgba(255, 255, 255, 0.28);
-      transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
+      background: rgba(255, 255, 255, 0.24);
+      border-color: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25), 0 4px 18px rgba(0,0,0,0.35);
     }
   </style>
 </head>
 <body>
 
+  <div class="bg-image" id="bg-img"></div>
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
     <div class="content-container">
-      <img class="top-avatar" src="avatar.png" alt="Avatar">
+      <img class="top-avatar tilt-card" src="avatar.png" alt="Avatar" data-tilt>
       
       <div class="player-hud" id="player-container"></div>
       
@@ -262,7 +306,7 @@
     const playerContainer = document.getElementById('player-container');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
-        <img class="track-cover" src="oblozka.jpg" alt="Cover">
+        <img class="track-cover tilt-card" id="track-cover" src="oblozka.jpg" alt="Cover" data-tilt>
       </div>
       <div class="visualizer-box">
         <canvas id="visualizer" width="340" height="35"></canvas>
@@ -271,19 +315,20 @@
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
       </div>
       <div class="controls">
-        <button class="ctrl-btn" id="prev-btn">◄◄</button>
-        <button class="ctrl-btn play-pause-btn" id="play-btn">❚❚</button>
-        <button class="ctrl-btn" id="next-btn">►►</button>
+        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◄◄</button>
+        <button class="ctrl-btn play-pause-btn tilt-card" id="play-btn" data-tilt>❚❚</button>
+        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>►►</button>
       </div>
     `;
 
     const linksContainer = document.getElementById('links-container');
     links.forEach(item => {
       const a = document.createElement('a');
-      a.className = 'link-card';
+      a.className = 'link-card tilt-card';
       a.href = item.url;
       a.target = '_blank';
       a.innerText = item.title;
+      a.setAttribute('data-tilt', '');
       linksContainer.appendChild(a);
     });
 
@@ -292,6 +337,8 @@
     const progressBar = document.getElementById('progress-bar');
     const canvas = document.getElementById('visualizer');
     const ctx = canvas.getContext('2d');
+    const trackCover = document.getElementById('track-cover');
+    const bgImg = document.getElementById('bg-img');
 
     audio.volume = 0.5;
     audio.loop = true;
@@ -326,6 +373,24 @@
 
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Пульсация басов
+      let bassSum = 0;
+      for (let i = 0; i < 4; i++) {
+        bassSum += dataArray[i];
+      }
+      const bassAvg = bassSum / 4;
+      const bassRatio = bassAvg / 255;
+
+      const scaleCover = 1 + (bassRatio * 0.08);
+      const scaleBg = 1 + (bassRatio * 0.025);
+      const glowBlur = 20 + (bassRatio * 25);
+
+      if(!trackCover.classList.contains('is-hovered')) {
+        trackCover.style.transform = `scale(${scaleCover})`;
+      }
+      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.2 + bassRatio * 0.5}), 0 4px 20px rgba(0,0,0,0.9)`;
+      bgImg.style.transform = `scale(${scaleBg})`;
 
       const totalBars = 36;
       const barWidth = 4;
@@ -388,6 +453,27 @@
       if (audio.duration) {
         audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
+    });
+
+    /* --- 3D TILT EFFECT ДЛЯ ВСЕХ ПЛАШЕК --- */
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -12;
+        const rotateY = ((x - centerX) / centerX) * 12;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-hovered');
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
+      });
     });
 
     /* --- СНЕГ И ШЛЕЙФ --- */
