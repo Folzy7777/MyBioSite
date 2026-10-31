@@ -25,6 +25,17 @@
       color: #fff;
     }
 
+    /* Холст для снега и следа мыши на весь экран */
+    #snow-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .wrapper {
       display: flex;
       flex-direction: column;
@@ -33,6 +44,8 @@
       min-height: 100vh;
       width: 100vw;
       padding: 20px;
+      position: relative;
+      z-index: 2;
     }
 
     .content-container {
@@ -43,7 +56,7 @@
       margin: 0 auto;
     }
 
-    /* Аватарка с анимацией и glow при наведении */
+    /* Аватарка */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -70,7 +83,7 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка трека с анимацией и glow при наведении */
+    /* Обложка трека */
     .cover-wrapper {
       width: 110px;
       height: 110px;
@@ -141,7 +154,7 @@
       cursor: pointer;
     }
 
-    /* Кнопки плеера с подъемом и свечением */
+    /* Кнопки управления */
     .controls {
       display: flex;
       align-items: center;
@@ -178,7 +191,7 @@
       font-size: 16px;
     }
 
-    /* Плашки ссылок с подъемом и glow */
+    /* Плашки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -219,6 +232,9 @@
   </style>
 </head>
 <body>
+
+  <!-- Холст эффектов снега -->
+  <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
     <div class="content-container">
@@ -371,6 +387,90 @@
         audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
     });
+
+    /* --- ЛОГИКА ПАДАЮЩЕГО СНЕГА И ИНТЕРАКТИВНОГО ШЛЕЙФА ЗА МЫШКОЙ --- */
+    const snowCanvas = document.getElementById('snow-canvas');
+    const sCtx = snowCanvas.getContext('2d');
+
+    function resizeSnowCanvas() {
+      snowCanvas.width = window.innerWidth;
+      snowCanvas.height = window.innerHeight;
+    }
+    resizeSnowCanvas();
+    window.addEventListener('resize', resizeSnowCanvas);
+
+    // Снежинки падения
+    const snowFlakes = [];
+    const maxFlakes = 55;
+
+    for (let i = 0; i < maxFlakes; i++) {
+      snowFlakes.push({
+        x: Math.random() * snowCanvas.width,
+        y: Math.random() * snowCanvas.height,
+        r: Math.random() * 2.5 + 1,
+        speedY: Math.random() * 0.8 + 0.3,
+        speedX: Math.random() * 0.5 - 0.25,
+        opacity: Math.random() * 0.6 + 0.3
+      });
+    }
+
+    // Частицы за мышкой
+    const mouseTrail = [];
+
+    window.addEventListener('mousemove', (e) => {
+      for (let i = 0; i < 3; i++) {
+        mouseTrail.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: Math.random() * 1.2 + 0.4,
+          r: Math.random() * 2 + 1,
+          life: 1,
+          decay: Math.random() * 0.02 + 0.015
+        });
+      }
+    });
+
+    function animateSnow() {
+      requestAnimationFrame(animateSnow);
+      sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+
+      // 1. Анимация общего снега
+      snowFlakes.forEach(f => {
+        f.y += f.speedY;
+        f.x += f.speedX;
+
+        if (f.y > snowCanvas.height) {
+          f.y = -10;
+          f.x = Math.random() * snowCanvas.width;
+        }
+
+        sCtx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+        sCtx.beginPath();
+        sCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        sCtx.fill();
+      });
+
+      // 2. Анимация шлейфа за мышкой
+      for (let i = mouseTrail.length - 1; i >= 0; i--) {
+        const p = mouseTrail[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          mouseTrail.splice(i, 1);
+          continue;
+        }
+
+        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.8})`;
+        sCtx.beginPath();
+        sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        sCtx.fill();
+      }
+    }
+
+    animateSnow();
   </script>
 
 </body>
