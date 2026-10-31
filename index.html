@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tyrbylent | Bio</title>
   <style>
+    /* Подключаем красивый современный шрифт с поддержкой полужирного курсива (Bold Italic) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,700&display=swap');
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -41,7 +44,7 @@
       margin: 0 auto;
     }
 
-    /* Аватарка +15% */
+    /* Аватарка */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -60,7 +63,7 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка смещена на 30px ниже впритык */
+    /* Обложка трека */
     .cover-wrapper {
       width: 110px;
       height: 110px;
@@ -123,7 +126,6 @@
       cursor: pointer;
     }
 
-    /* 3 кнопки без сердечка по центру */
     .controls {
       display: flex;
       align-items: center;
@@ -156,6 +158,7 @@
       font-size: 18px;
     }
 
+    /* Плашки ссылок с классическим стилем Bold Italic */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -167,7 +170,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 20px;
+      padding: 14px 15px;
       background: rgba(255, 255, 255, 0.16);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -175,9 +178,14 @@
       border-radius: 12px;
       color: #fff;
       text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 750;
+      font-style: italic;
+      font-size: 13.5px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       transition: all 0.2s ease;
       box-shadow: 0 4px 18px rgba(0,0,0,0.35);
     }
@@ -205,10 +213,11 @@
   </audio>
 
   <script>
+    // Твои реальные ссылки и точный текст для плашек
     const links = [
-      { title: "ссылка на тик ток", url: "https://tiktok.com" },
-      { title: "ссылка на дискорд", url: "https://discord.gg" },
-      { title: "ссылка на стим", url: "https://steamcommunity.com" }
+      { title: "tiktok.com/@tyrbylent1", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
+      { title: "discord/folzygame", url: "https://discord.com/users/978644075433570415" },
+      { title: "steam.com/tyrbylentnost", url: "https://steamcommunity.com/profiles/76561198884991493/" }
     ];
 
     const playerContainer = document.getElementById('player-container');
@@ -247,8 +256,6 @@
 
     audio.volume = 0.5;
     audio.loop = true;
-
-    // Устанавливаем стартовую позицию 12 секунд
     audio.currentTime = 12;
 
     let audioCtx, analyser, source, dataArray;
@@ -310,11 +317,9 @@
       });
     }
 
-    // Автоплей при старте
     window.addEventListener('DOMContentLoaded', startPlayback);
     window.addEventListener('load', startPlayback);
 
-    // Подстраховка при взаимодействии с окном
     ['click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
       window.addEventListener(evt, () => {
         if (audio.paused) startPlayback();
