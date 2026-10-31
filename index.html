@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tyrbylent | Bio</title>
+  <title>Tyrbylent | Official Bio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,800;1,700&display=swap');
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
     }
 
     html, body {
       width: 100%;
       height: 100%;
-      margin: 0;
-      padding: 0;
       overflow: hidden;
-      background: #000;
+      background: #050508;
       color: #fff;
     }
 
-    /* Фоновое фото framee.png с пульсацией под басы */
+    /* Фоновое фото с пульсацией под басы */
     .bg-image {
       position: fixed;
       top: 0;
@@ -34,8 +34,20 @@
       background: url('framee.png') no-repeat center center;
       background-size: cover;
       z-index: 0;
-      will-change: transform;
-      transition: transform 0.04s ease-out;
+      will-change: transform, filter;
+      transition: transform 0.05s ease-out, filter 0.05s ease-out;
+      filter: brightness(0.65) contrast(1.1);
+    }
+
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, rgba(15, 15, 25, 0.2) 0%, rgba(5, 5, 8, 0.85) 100%);
+      z-index: 1;
+      pointer-events: none;
     }
 
     /* Холст для снега и следа мыши */
@@ -46,7 +58,7 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
 
     .wrapper {
@@ -58,91 +70,146 @@
       width: 100vw;
       padding: 20px;
       position: relative;
-      z-index: 2;
-      perspective: 1000px;
+      z-index: 3;
+      perspective: 1200px;
     }
 
-    .content-container {
+    /* Основной премиум-контейнер */
+    .main-card {
+      width: 360px;
+      background: rgba(18, 20, 29, 0.55);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 28px 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 340px;
-      margin: 0 auto;
-    }
-
-    .tilt-card {
-      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform-style: preserve-3d;
       will-change: transform;
+      transition: transform 0.15s ease-out, box-shadow 0.2s ease;
     }
 
-    /* Аватарка со свечением и 3D */
+    .main-card:hover {
+      box-shadow: 0 35px 70px rgba(0, 0, 0, 0.7),
+                  0 0 40px rgba(255, 255, 255, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* Аватар */
+    .avatar-wrapper {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
     .top-avatar {
-      width: 104px;
-      height: 104px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 4px 25px rgba(0,0,0,0.8);
-      margin-bottom: 15px;
-      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      display: block;
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .top-avatar:hover, .tilt-card:hover {
-      border-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
+    .status-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      background: rgba(10, 10, 15, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: #00ffaa;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(8px);
     }
 
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #00ffaa;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ffaa;
+    }
+
+    /* Информация профиля */
+    .profile-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      margin-bottom: 2px;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-subtitle {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* Музыкальный Плеер */
     .player-hud {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 18px;
     }
 
-    /* Обложка трека */
     .cover-wrapper {
-      width: 110px;
-      height: 110px;
-      margin-top: 35px;
-      margin-bottom: 0px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      perspective: 1000px;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 12px;
+      perspective: 800px;
     }
 
     .track-cover {
-      width: 110px;
-      height: 110px;
-      border-radius: 10px;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.9);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       will-change: transform, box-shadow;
-      cursor: pointer;
+      transition: transform 0.1s ease-out;
     }
 
     .visualizer-box {
-      width: 340px;
-      height: 35px;
+      width: 100%;
+      height: 32px;
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      margin-bottom: 2px;
+      margin-bottom: 8px;
     }
 
     #visualizer {
-      width: 340px;
-      height: 35px;
+      width: 100%;
+      height: 32px;
     }
 
     .progress-wrap {
-      width: 340px;
+      width: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .progress-bar {
@@ -150,414 +217,124 @@
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
       outline: none;
       cursor: pointer;
+      position: relative;
     }
 
     .progress-bar::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
       cursor: pointer;
+      transition: transform 0.15s;
     }
 
-    /* Жестко фиксируем ширину 340px и запрещаем перенос строк для кнопок */
+    .progress-bar::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+
     .controls {
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      width: 340px;
+      gap: 14px;
+      width: 100%;
     }
 
     .ctrl-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 50%;
       color: #fff;
-      font-size: 13px;
+      font-size: 11px;
       cursor: pointer;
-      opacity: 0.9;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       flex-shrink: 0;
-      transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s, border-color 0.2s;
+      transition: all 0.2s ease;
     }
 
     .ctrl-btn:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     .play-pause-btn {
+      width: 40px;
+      height: 40px;
       font-size: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Плашки ссылок с текстурой инея и капель */
+    /* Плашки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 340px;
+      gap: 10px;
+      width: 100%;
     }
 
     .link-card {
       position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 14px 15px;
-      background: rgba(255, 255, 255, 0.14);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
       color: #fff;
       text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      font-weight: 750;
-      font-style: italic;
-      font-size: 13.5px;
-      letter-spacing: 0.2px;
-      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.25s ease;
       overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-      transform-style: preserve-3d;
+    }
+
+    .link-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    .link-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .link-arrow {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      transition: transform 0.2s ease, color 0.2s ease;
+      z-index: 2;
     }
 
     .link-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.35) 2px, transparent 2.5px),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
-        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.45) 2.5px, transparent 3px),
-        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.3) 1px, transparent 2px),
-        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
-      opacity: 0.65;
-      pointer-events: none;
-      border-radius: 12px;
-    }
-
-    .link-card::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent 45%,
-        rgba(255, 255, 255, 0.2) 50%,
-        transparent 55%
-      );
-      transform: rotate(30deg) translateX(-100%);
-      transition: transform 0.6s ease;
-      pointer-events: none;
-    }
-
-    .link-card:hover::after {
-      transform: rotate(30deg) translateX(100%);
+      background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .link-card:hover {
-      background: rgba(255, 255, 255, 0.24);
-      border-color: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
-    }
-  </style>
-</head>
-<body>
-
-  <div class="bg-image" id="bg-img"></div>
-  <canvas id="snow-canvas"></canvas>
-
-  <div class="wrapper">
-    <div class="content-container">
-      <img class="top-avatar tilt-card" src="avatar.png" alt="Avatar" data-tilt>
-      
-      <div class="player-hud" id="player-container"></div>
-      
-      <div class="links-box" id="links-container"></div>
-    </div>
-  </div>
-
-  <audio id="audio-player" loop autoplay crossorigin="anonymous">
-    <source src="Music.mp3" type="audio/mpeg">
-  </audio>
-
-  <script>
-    const links = [
-      { title: "tiktok.com/@tyrbylent1", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
-      { title: "discord/folzygame", url: "https://discord.com/users/978644075433570415" },
-      { title: "steam.com/tyrbylentnost", url: "https://steamcommunity.com/profiles/76561198884991493/" }
-    ];
-
-    const playerContainer = document.getElementById('player-container');
-    playerContainer.innerHTML = `
-      <div class="cover-wrapper">
-        <img class="track-cover tilt-card" id="track-cover" src="oblozka.jpg" alt="Cover" data-tilt>
-      </div>
-      <div class="visualizer-box">
-        <canvas id="visualizer" width="340" height="35"></canvas>
-      </div>
-      <div class="progress-wrap">
-        <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
-      </div>
-      <div class="controls">
-        <button class="ctrl-btn tilt-card" id="prev-btn" data-tilt>◄◄</button>
-        <button class="ctrl-btn play-pause-btn tilt-card" id="play-btn" data-tilt>❚❚</button>
-        <button class="ctrl-btn tilt-card" id="next-btn" data-tilt>►►</button>
-      </div>
-    `;
-
-    const linksContainer = document.getElementById('links-container');
-    links.forEach(item => {
-      const a = document.createElement('a');
-      a.className = 'link-card tilt-card';
-      a.href = item.url;
-      a.target = '_blank';
-      a.innerText = item.title;
-      a.setAttribute('data-tilt', '');
-      linksContainer.appendChild(a);
-    });
-
-    const audio = document.getElementById('audio-player');
-    const playBtn = document.getElementById('play-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const canvas = document.getElementById('visualizer');
-    const ctx = canvas.getContext('2d');
-    const trackCover = document.getElementById('track-cover');
-    const bgImg = document.getElementById('bg-img');
-
-    audio.volume = 0.5;
-    audio.loop = true;
-    audio.currentTime = 12;
-
-    let audioCtx, analyser, source, dataArray;
-    let isAudioSetup = false;
-
-    function initAudioContext() {
-      if (isAudioSetup) return;
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        source = audioCtx.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        
-        analyser.fftSize = 128;
-        analyser.smoothingTimeConstant = 0.6;
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        
-        isAudioSetup = true;
-        drawVisualizer();
-      } catch (e) {
-        console.log("Audio API Error:", e);
-      }
-    }
-
-    function drawVisualizer() {
-      requestAnimationFrame(drawVisualizer);
-      if (!analyser) return;
-
-      analyser.getByteFrequencyData(dataArray);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      let bassSum = 0;
-      for (let i = 0; i < 5; i++) {
-        bassSum += dataArray[i];
-      }
-      const bassAvg = bassSum / 5;
-      const bassRatio = bassAvg / 255;
-
-      const scaleCover = 1 + (bassRatio * 0.18); 
-      const scaleBg = 1 + (bassRatio * 0.045);    
-      const glowBlur = 20 + (bassRatio * 40);     
-
-      if(!trackCover.classList.contains('is-hovered')) {
-        trackCover.style.transform = `scale(${scaleCover})`;
-      }
-      trackCover.style.boxShadow = `0 4px ${glowBlur}px rgba(255, 255, 255, ${0.3 + bassRatio * 0.6}), 0 4px 20px rgba(0,0,0,0.9)`;
-      bgImg.style.transform = `scale(${scaleBg})`;
-
-      const totalBars = 36;
-      const barWidth = 4;
-      const gap = 5;
-      const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
-
-      for (let i = 0; i < totalBars; i++) {
-        const value = dataArray[i + 3] || dataArray[i] || 0;
-        const barHeight = (value / 255) * canvas.height;
-        const x = startX + i * (barWidth + gap);
-        const y = canvas.height - barHeight;
-
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.45 + (value / 255) * 0.55})`;
-        ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 2);
-        ctx.fill();
-      }
-    }
-
-    function startPlayback() {
-      initAudioContext();
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      
-      audio.play().then(() => {
-        playBtn.innerText = '❚❚';
-      }).catch(() => {
-        playBtn.innerText = '▶';
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', startPlayback);
-    window.addEventListener('load', startPlayback);
-
-    ['click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
-      window.addEventListener(evt, () => {
-        if (audio.paused) startPlayback();
-      }, { once: true });
-    });
-
-    playBtn.addEventListener('click', () => {
-      initAudioContext();
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-
-      if (audio.paused) {
-        audio.play();
-        playBtn.innerText = '❚❚';
-      } else {
-        audio.pause();
-        playBtn.innerText = '▶';
-      }
-    });
-
-    audio.addEventListener('timeupdate', () => {
-      if (audio.duration) {
-        progressBar.value = (audio.currentTime / audio.duration) * 100;
-      }
-    });
-
-    progressBar.addEventListener('input', () => {
-      if (audio.duration) {
-        audio.currentTime = (progressBar.value / 100) * audio.duration;
-      }
-    });
-
-    /* --- 3D TILT EFFECT --- */
-    document.querySelectorAll('[data-tilt]').forEach(card => {
-      card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -12;
-        const rotateY = ((x - centerX) / centerX) * 12;
-
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
-      });
-
-      card.addEventListener('mouseleave', () => {
-        card.classList.remove('is-hovered');
-        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)`;
-      });
-    });
-
-    /* --- СНЕГ И ШЛЕЙФ --- */
-    const snowCanvas = document.getElementById('snow-canvas');
-    const sCtx = snowCanvas.getContext('2d');
-
-    function resizeSnowCanvas() {
-      snowCanvas.width = window.innerWidth;
-      snowCanvas.height = window.innerHeight;
-    }
-    resizeSnowCanvas();
-    window.addEventListener('resize', resizeSnowCanvas);
-
-    const snowFlakes = [];
-    const maxFlakes = 55;
-
-    for (let i = 0; i < maxFlakes; i++) {
-      snowFlakes.push({
-        x: Math.random() * snowCanvas.width,
-        y: Math.random() * snowCanvas.height,
-        r: Math.random() * 2.5 + 1,
-        speedY: Math.random() * 0.8 + 0.3,
-        speedX: Math.random() * 0.5 - 0.25,
-        opacity: Math.random() * 0.6 + 0.3
-      });
-    }
-
-    const mouseTrail = [];
-
-    window.addEventListener('mousemove', (e) => {
-      for (let i = 0; i < 3; i++) {
-        mouseTrail.push({
-          x: e.clientX,
-          y: e.clientY,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: Math.random() * 1.2 + 0.4,
-          r: Math.random() * 2 + 1,
-          life: 1,
-          decay: Math.random() * 0.02 + 0.015
-        });
-      }
-    });
-
-    function animateSnow() {
-      requestAnimationFrame(animateSnow);
-      sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
-
-      snowFlakes.forEach(f => {
-        f.y += f.speedY;
-        f.x += f.speedX;
-
-        if (f.y > snowCanvas.height) {
-          f.y = -10;
-          f.x = Math.random() * snowCanvas.width;
-        }
-
-        sCtx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
-        sCtx.beginPath();
-        sCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-        sCtx.fill();
-      });
-
-      for (let i = mouseTrail.length - 1; i >= 0; i--) {
-        const p = mouseTrail[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= p.decay;
-
-        if (p.life <= 0) {
-          mouseTrail.splice(i, 1);
-          continue;
-        }
-
-        sCtx.fillStyle = `rgba(255, 255, 255, ${p.life * 0.8})`;
-        sCtx.beginPath();
-        sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        sCtx.fill();
-      }
-    }
-
-    animateSnow();
-  </script>
-
-</body>
-</html>
+      background: rgba(255, 255,
