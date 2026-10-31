@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tyrbylent | Bio</title>
   <style>
-    /* Подключаем красивый современный шрифт с поддержкой полужирного курсива (Bold Italic) */
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,700;1,700&display=swap');
 
     * {
@@ -44,7 +43,7 @@
       margin: 0 auto;
     }
 
-    /* Аватарка */
+    /* Аватарка с анимацией и glow при наведении */
     .top-avatar {
       width: 104px;
       height: 104px;
@@ -53,6 +52,14 @@
       border: 2px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 4px 25px rgba(0,0,0,0.8);
       margin-bottom: 15px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+    }
+
+    .top-avatar:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35), 0 4px 25px rgba(0,0,0,0.8);
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     .player-hud {
@@ -63,7 +70,7 @@
       margin-bottom: 15px;
     }
 
-    /* Обложка трека */
+    /* Обложка трека с анимацией и glow при наведении */
     .cover-wrapper {
       width: 110px;
       height: 110px;
@@ -81,6 +88,14 @@
       object-fit: cover;
       box-shadow: 0 4px 20px rgba(0,0,0,0.9);
       border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+    }
+
+    .track-cover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35), 0 4px 20px rgba(0,0,0,0.9);
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     .visualizer-box {
@@ -126,6 +141,7 @@
       cursor: pointer;
     }
 
+    /* Кнопки плеера с подъемом и свечением */
     .controls {
       display: flex;
       align-items: center;
@@ -135,30 +151,34 @@
     }
 
     .ctrl-btn {
-      background: none;
-      border: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
       color: #fff;
       font-size: 16px;
       cursor: pointer;
-      opacity: 0.85;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      opacity: 0.9;
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 24px;
-      height: 24px;
+      width: 36px;
+      height: 36px;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
-      transform: scale(1.2);
+      transform: translateY(-3px) scale(1.1);
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
     }
 
     .play-pause-btn {
-      font-size: 18px;
+      font-size: 16px;
     }
 
-    /* Плашки ссылок с классическим стилем Bold Italic */
+    /* Плашки ссылок с подъемом и glow */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -186,13 +206,15 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       box-shadow: 0 4px 18px rgba(0,0,0,0.35);
     }
 
     .link-card:hover {
-      background: rgba(255, 255, 255, 0.26);
-      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(0,0,0,0.35);
     }
   </style>
 </head>
@@ -213,7 +235,6 @@
   </audio>
 
   <script>
-    // Твои реальные ссылки и точный текст для плашек
     const links = [
       { title: "tiktok.com/@tyrbylent1", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
       { title: "discord/folzygame", url: "https://discord.com/users/978644075433570415" },
