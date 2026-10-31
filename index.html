@@ -25,19 +25,18 @@
       scroll-behavior: smooth;
     }
 
-    /* Фоновое изображение */
-    .bg-image {
+    /* Фон — ПОЛНОСТЬЮ ИНЛАЙН, ЧТОБЫ НЕ БЫЛО ОШИБОК */
+    #bg-img {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: url(\'framee.png\') no-repeat center center;
+      background: url(\'./framee.png\') no-repeat center center;
       background-size: cover;
       z-index: 0;
     }
 
-    /* Снежный эффект */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -78,7 +77,6 @@
       will-change: transform;
     }
 
-    /* Аватарка */
     .top-avatar {
       width: 120px;
       height: 120px;
@@ -287,12 +285,17 @@
 </head>
 <body>
 
-  <div class="bg-image" id="bg-img"></div>
+  <!-- ФОН — ПОЛНОСТЬЮ ИНЛАЙН, ЧТОБЫ НЕТ ОШИБОК -->
+  <div 
+    id="bg-img" 
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url(\'./framee.png\') no-repeat center center; background-size: cover; z-index: 0;"
+  ></div>
+
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
     <div class="content-container">
-      <img class="top-avatar tilt-card" src="avatar.png" alt="Avatar" data-tilt>
+      <img class="top-avatar tilt-card" src="./avatar.png" alt="Avatar" data-tilt>
       
       <div class="player-hud" id="player-container"></div>
       
@@ -301,7 +304,7 @@
   </div>
 
   <audio id="audio-player" loop autoplay crossorigin="anonymous">
-    <source src="Music.mp3" type="audio/mpeg">
+    <source src="./music.mp3" type="audio/mpeg">
   </audio>
 
   <script>
@@ -314,7 +317,7 @@
     const playerContainer = document.getElementById(\'player-container\');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
-        <img class="track-cover tilt-card" id="track-cover" src="oblozka.jpg" alt="Cover" data-tilt>
+        <img class="track-cover tilt-card" id="track-cover" src="./oblozka.jpg" alt="Cover" data-tilt>
       </div>
       <div class="visualizer-box">
         <canvas id="visualizer" width="340" height="35"></canvas>
