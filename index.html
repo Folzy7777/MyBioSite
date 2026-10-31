@@ -20,14 +20,14 @@
       color: #fff;
     }
 
-    /* Фоновая гифка fon.gif */
-    .bg-gif {
+    /* Фоновое изображение framee.png на весь экран */
+    .bg-img {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-image: url('fon.gif');
+      background-image: url('framee.png');
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
@@ -41,7 +41,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.8) 100%);
+      background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%);
       z-index: -1;
     }
 
@@ -58,30 +58,31 @@
 
     /* Аватарка вверху */
     .top-avatar {
-      width: 95px;
-      height: 95px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 4px 25px rgba(0,0,0,0.8);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       background-color: #1a1a1f;
     }
 
-    /* Плеер шире блоков с ссылками (ширина 380px) */
+    /* Единый центрированный блок плеера (ширина 340px) */
     .player-hud {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      max-width: 380px;
-      margin-bottom: 22px;
+      max-width: 340px;
+      margin-bottom: 20px;
     }
 
+    /* Увеличенная обложка трека, ближе к плееру */
     .cover-wrapper {
-      width: 65px;
-      height: 65px;
-      margin-bottom: 12px;
+      width: 85px;
+      height: 85px;
+      margin-bottom: 6px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -97,14 +98,14 @@
       background-color: #1a1a1f;
     }
 
-    /* Визуализатор на всю ширину плеера (380px) */
+    /* Визуализатор на всю ширину (340px) */
     .visualizer-box {
       width: 100%;
-      height: 50px;
+      height: 45px;
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     #visualizer {
@@ -112,13 +113,13 @@
       height: 100%;
     }
 
-    /* Ползунок прокрутки во всю ширину */
+    /* Ползунок прокрутки */
     .progress-wrap {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .progress-bar {
@@ -142,12 +143,12 @@
       cursor: pointer;
     }
 
-    /* Кнопки управления строго по центру */
+    /* Кнопки управления */
     .controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 25px;
       width: 100%;
     }
 
@@ -173,13 +174,13 @@
       font-size: 20px;
     }
 
-    /* Панели со ссылками (компактнее плеера, ширина 330px) */
+    /* Панели со ссылками (ширина 340px, вровень с плеером) */
     .links-box {
       display: flex;
       flex-direction: column;
       gap: 12px;
       width: 100%;
-      max-width: 330px;
+      max-width: 340px;
     }
 
     .link-card {
@@ -209,8 +210,8 @@
 </head>
 <body>
 
-  <!-- Фон гифка fon.gif -->
-  <div class="bg-gif"></div>
+  <!-- Фон картинка framee.png -->
+  <div class="bg-img"></div>
   <div class="overlay"></div>
 
   <div class="wrapper">
@@ -220,7 +221,7 @@
     <div class="links-box" id="links-container"></div>
   </div>
 
-  <audio id="audio-player" loop crossorigin="anonymous">
+  <audio id="audio-player" loop autoplay crossorigin="anonymous">
     <source src="Music.mp3" type="audio/mpeg">
   </audio>
 
@@ -231,14 +232,14 @@
       { title: "ссылка на стим", url: "https://steamcommunity.com" }
     ];
 
-    // Генерация плеера (холст на 380px под ширину плеера)
+    // Рендер плеера (холст на 340px вровень с элементами)
     const playerContainer = document.getElementById('player-container');
     playerContainer.innerHTML = `
       <div class="cover-wrapper">
         <img class="track-cover" src="oblozka.jpg" alt="Cover">
       </div>
       <div class="visualizer-box">
-        <canvas id="visualizer" width="380" height="50"></canvas>
+        <canvas id="visualizer" width="340" height="45"></canvas>
       </div>
       <div class="progress-wrap">
         <input type="range" id="progress-bar" class="progress-bar" value="0" min="0" max="100">
@@ -251,7 +252,6 @@
       </div>
     `;
 
-    // Генерация кнопок ссылок
     const linksContainer = document.getElementById('links-container');
     links.forEach(item => {
       const a = document.createElement('a');
@@ -262,12 +262,15 @@
       linksContainer.appendChild(a);
     });
 
-    // Аудио и логика визуализатора
     const audio = document.getElementById('audio-player');
     const playBtn = document.getElementById('play-btn');
     const progressBar = document.getElementById('progress-bar');
     const canvas = document.getElementById('visualizer');
     const ctx = canvas.getContext('2d');
+
+    // Установка громкости на 50% и зацикливание
+    audio.volume = 0.5;
+    audio.loop = true;
 
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
@@ -282,6 +285,7 @@
         analyser.connect(audioCtx.destination);
         
         analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.8; // Быстрее реакция на высокие частоты
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         
         isAudioSetup = true;
@@ -298,13 +302,14 @@
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const totalBars = 46; // Больше столбиков на всю ширину
+      const totalBars = 38;
       const barWidth = 4;
-      const gap = 4;
+      const gap = 5;
       const startX = (canvas.width - (totalBars * (barWidth + gap))) / 2;
 
       for (let i = 0; i < totalBars; i++) {
-        const value = dataArray[i] || 0;
+        // Делаем акцент на верхних и средних частотах
+        const value = dataArray[i + 2] || dataArray[i] || 0;
         const barHeight = (value / 255) * canvas.height;
         const x = startX + i * (barWidth + gap);
         const y = canvas.height - barHeight;
@@ -315,6 +320,17 @@
         ctx.fill();
       }
     }
+
+    // Попытка автозапуска при загрузке страницы
+    window.addEventListener('load', () => {
+      audio.play().then(() => {
+        initAudioContext();
+        playBtn.innerText = '❚❚';
+      }).catch(() => {
+        // Если браузер заблокировал автоплей со звуком, запустим по первому клику
+        playBtn.innerText = '▶';
+      });
+    });
 
     playBtn.addEventListener('click', () => {
       initAudioContext();
