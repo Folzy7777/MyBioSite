@@ -25,7 +25,7 @@
       color: #fff;
     }
 
-    /* Холст для снега и следа мыши на весь экран */
+    /* Холст для снега и следа мыши */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -154,41 +154,44 @@
       cursor: pointer;
     }
 
-    /* Кнопки управления */
+    /* Все 3 кнопки ровно в один ряд */
     .controls {
       display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 30px;
+      gap: 20px;
       width: 340px;
     }
 
     .ctrl-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 50%;
       color: #fff;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
       opacity: 0.9;
       transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
     }
 
     .ctrl-btn:hover {
       opacity: 1;
       transform: translateY(-3px) scale(1.1);
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.6);
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
     }
 
     .play-pause-btn {
-      font-size: 16px;
+      font-size: 15px;
     }
 
     /* Плашки ссылок */
@@ -233,7 +236,6 @@
 </head>
 <body>
 
-  <!-- Холст эффектов снега -->
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
@@ -388,7 +390,7 @@
       }
     });
 
-    /* --- ЛОГИКА ПАДАЮЩЕГО СНЕГА И ИНТЕРАКТИВНОГО ШЛЕЙФА ЗА МЫШКОЙ --- */
+    /* --- СНЕГ И ШЛЕЙФ --- */
     const snowCanvas = document.getElementById('snow-canvas');
     const sCtx = snowCanvas.getContext('2d');
 
@@ -399,7 +401,6 @@
     resizeSnowCanvas();
     window.addEventListener('resize', resizeSnowCanvas);
 
-    // Снежинки падения
     const snowFlakes = [];
     const maxFlakes = 55;
 
@@ -414,7 +415,6 @@
       });
     }
 
-    // Частицы за мышкой
     const mouseTrail = [];
 
     window.addEventListener('mousemove', (e) => {
@@ -435,7 +435,6 @@
       requestAnimationFrame(animateSnow);
       sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
 
-      // 1. Анимация общего снега
       snowFlakes.forEach(f => {
         f.y += f.speedY;
         f.x += f.speedX;
@@ -451,7 +450,6 @@
         sCtx.fill();
       });
 
-      // 2. Анимация шлейфа за мышкой
       for (let i = mouseTrail.length - 1; i >= 0; i--) {
         const p = mouseTrail[i];
         p.x += p.vx;
