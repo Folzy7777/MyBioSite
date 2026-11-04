@@ -25,7 +25,7 @@
       color: #fff;
     }
 
-    /* Классический круглый курсор со свечением */
+    /* Курсор */
     #custom-cursor {
       position: fixed;
       top: 0;
@@ -51,7 +51,7 @@
                   0 0 40px rgba(255, 0, 60, 0.5);
     }
 
-    /* Экран входа (интро) */
+    /* Интро */
     #intro-screen {
       position: fixed;
       top: 0;
@@ -100,7 +100,7 @@
       pointer-events: none;
     }
 
-    /* Фоновое фото с параллаксом */
+    /* Фон с параллаксом */
     .bg-image {
       position: fixed;
       top: -30px;
@@ -126,7 +126,6 @@
       pointer-events: none;
     }
 
-    /* Боковые световые эффекты */
     .side-glow-left, .side-glow-right {
       position: fixed;
       top: 0;
@@ -149,7 +148,6 @@
       background: linear-gradient(270deg, rgba(0, 255, 170, 0.2), transparent);
     }
 
-    /* Холст для снега и шлейфа мыши */
     #snow-canvas {
       position: fixed;
       top: 0;
@@ -172,7 +170,7 @@
       z-index: 4;
     }
 
-    /* Основной премиум-контейнер */
+    /* Основная карточка */
     .main-card {
       width: 360px;
       background: rgba(18, 20, 29, 0.55);
@@ -180,7 +178,7 @@
       -webkit-backdrop-filter: blur(24px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 24px;
-      padding: 28px 22px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -198,71 +196,97 @@
       }
     }
 
-    .main-card:hover {
-      box-shadow: 0 35px 70px rgba(0, 0, 0, 0.7),
-                  0 0 40px rgba(255, 255, 255, 0.08),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    /* ДИСКОРД ПЛАШКА ВМЕСТО ПРОСТОЙ АВАТАРКИ */
+    .discord-badge {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+      backdrop-filter: blur(10px);
     }
 
-    /* Аватар */
-    .avatar-wrapper {
+    .discord-avatar-wrap {
       position: relative;
-      margin-bottom: 14px;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
     }
 
-    .top-avatar {
-      width: 96px;
-      height: 96px;
+    .discord-avatar {
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-      display: block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
 
-    .status-badge {
+    /* Индикатор статуса */
+    .discord-status-dot {
       position: absolute;
       bottom: 2px;
-      right: 4px;
-      background: rgba(10, 10, 15, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      color: #00ffaa;
+      right: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid #12141d;
+      background: #747f8d; /* Оффлайн по умолчанию */
+      transition: background 0.3s ease;
+    }
+
+    .discord-status-dot.online { background: #23a55a; box-shadow: 0 0 10px #23a55a; }
+    .discord-status-dot.idle { background: #f0b232; box-shadow: 0 0 10px #f0b232; }
+    .discord-status-dot.dnd { background: #f23f43; box-shadow: 0 0 10px #f23f43; }
+    .discord-status-dot.offline { background: #80848e; }
+
+    .discord-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .discord-username {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .discord-activity {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: flex;
       align-items: center;
       gap: 4px;
-      backdrop-filter: blur(8px);
     }
 
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: #00ffaa;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #00ffaa;
-    }
-
-    /* Информация профиля */
-    .profile-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+    .discord-activity span {
       color: #fff;
-      margin-bottom: 2px;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      font-weight: 700;
     }
 
+    /* Сохраняем надпись Digital Creator */
     .profile-subtitle {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 1.5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     /* Музыкальный Плеер */
@@ -275,7 +299,7 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 16px;
       padding: 14px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .cover-wrapper {
@@ -378,7 +402,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Плашки ссылок с неоном */
+    /* Плашки ссылок */
     .links-box {
       display: flex;
       flex-direction: column;
@@ -447,10 +471,10 @@
 </head>
 <body>
 
-  <!-- Кастомный круглый курсор -->
+  <!-- Кастомный курсор -->
   <div id="custom-cursor"></div>
 
-  <!-- Экран входа (интро) -->
+  <!-- Экран входа -->
   <div id="intro-screen">
     <div class="intro-content">
       <div class="intro-title">TYRBYLENT</div>
@@ -464,20 +488,23 @@
   <div class="side-glow-left" id="glow-left"></div>
   <div class="side-glow-right" id="glow-right"></div>
 
-  <!-- Холст для снега и шлейфа мыши -->
   <canvas id="snow-canvas"></canvas>
 
   <div class="wrapper">
     <div class="main-card">
       
-      <div class="avatar-wrapper">
-        <img class="top-avatar" src="avatar.png" alt="Avatar">
-        <div class="status-badge">
-          <span class="status-dot"></span> ONLINE
+      <!-- Интегрированная Discord плашка -->
+      <div class="discord-badge">
+        <div class="discord-avatar-wrap">
+          <img class="discord-avatar" id="discord-avatar" src="avatar.png" alt="Discord Avatar">
+          <div class="discord-status-dot" id="discord-status"></div>
+        </div>
+        <div class="discord-info">
+          <div class="discord-username" id="discord-username">Tyrbylent</div>
+          <div class="discord-activity" id="discord-activity">Offline</div>
         </div>
       </div>
 
-      <div class="profile-title">Tyrbylent</div>
       <div class="profile-subtitle">Digital Creator</div>
       
       <div class="player-hud" id="player-container"></div>
@@ -492,6 +519,8 @@
   </audio>
 
   <script>
+    const DISCORD_ID = "978644075433570415";
+
     const links = [
       { title: "TikTok", label: "@tyrbylent1", icon: "fa-brands fa-tiktok", url: "https://www.tiktok.com/@tyrbylent1?_r=1&_t=ZS-9B0EDvCNmD7" },
       { title: "Discord", label: "folzygame", icon: "fa-brands fa-discord", url: "https://discord.com/users/978644075433570415" },
@@ -532,6 +561,49 @@
       linksContainer.appendChild(a);
     });
 
+    /* --- ЛОГИКА LANYARD API (DISCORD REALTIME STATUS) --- */
+    async function fetchDiscordStatus() {
+      try {
+        const response = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
+        const json = await response.json();
+        
+        if (!json.success || !json.data) return;
+        const data = json.data;
+
+        // Обновляем аватарку
+        const avatarImg = document.getElementById('discord-avatar');
+        if (data.discord_user.avatar) {
+          avatarImg.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${data.discord_user.avatar}.png?size=128`;
+        }
+
+        // Обновляем имя
+        const usernameEl = document.getElementById('discord-username');
+        usernameEl.innerText = data.discord_user.global_name || data.discord_user.username;
+
+        // Обновляем статус (online, idle, dnd, offline)
+        const statusDot = document.getElementById('discord-status');
+        statusDot.className = `discord-status-dot ${data.discord_status}`;
+
+        // Обновляем активность
+        const activityEl = document.getElementById('discord-activity');
+        const game = data.activities.find(act => act.type === 0); // Type 0 = Playing
+
+        if (game) {
+          activityEl.innerHTML = `Playing <span>${game.name}</span>`;
+        } else if (data.activities.length > 0 && data.activities[0].state) {
+          activityEl.innerText = data.activities[0].state;
+        } else {
+          activityEl.innerText = data.discord_status === 'offline' ? 'Offline' : 'Online';
+        }
+      } catch (e) {
+        console.log("Discord Lanyard Error:", e);
+      }
+    }
+
+    fetchDiscordStatus();
+    setInterval(fetchDiscordStatus, 10000); // автообновление каждые 10 сек
+    /* ---------------------------------------------------- */
+
     const audio = document.getElementById('audio-player');
     const playBtn = document.getElementById('play-btn');
     const progressBar = document.getElementById('progress-bar');
@@ -550,82 +622,66 @@
     let audioCtx, analyser, source, dataArray;
     let isAudioSetup = false;
 
-    // --- ЗВУКОВОЙ ДВИЖОК НА WEB AUDIO API ---
+    /* --- WEB AUDIO SOUND EFFECTS --- */
     let soundCtx = null;
 
     function getSoundContext() {
-      if (!soundCtx) {
-        soundCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (soundCtx.state === 'suspended') {
-        soundCtx.resume();
-      }
+      if (!soundCtx) soundCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (soundCtx.state === 'suspended') soundCtx.resume();
       return soundCtx;
     }
 
-    // Дорогой микро-клик (чистый высокочастотный тик)
     function playUiClickSound() {
       try {
-        const ctx = getSoundContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
+        const c = getSoundContext();
+        const osc = c.createOscillator();
+        const gain = c.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
-
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-
+        osc.frequency.setValueAtTime(800, c.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, c.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.04);
         osc.connect(gain);
-        gain.connect(ctx.destination);
-
+        gain.connect(c.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 0.04);
+        osc.stop(c.currentTime + 0.04);
       } catch (e) {}
     }
 
-    // Звук «вибрации/трещотки» (трррууу) при перетаскивании ползунка
     let lastVibrateTime = 0;
     function playVibrateSound() {
       try {
         const now = Date.now();
-        if (now - lastVibrateTime < 45) return; // Ограничение частоты срабатывания
+        if (now - lastVibrateTime < 45) return;
         lastVibrateTime = now;
 
-        const ctx = getSoundContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
+        const c = getSoundContext();
+        const osc = c.createOscillator();
+        const gain = c.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(90, ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(60, ctx.currentTime + 0.03);
-
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
-
+        osc.frequency.setValueAtTime(90, c.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, c.currentTime + 0.03);
+        gain.gain.setValueAtTime(0.05, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.03);
         osc.connect(gain);
-        gain.connect(ctx.destination);
-
+        gain.connect(c.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 0.03);
+        osc.stop(c.currentTime + 0.03);
       } catch (e) {}
     }
 
-    // Привязываем звуки кликов ко всем кнопкам и ссылкам
     document.querySelectorAll('a, button').forEach(el => {
       el.addEventListener('click', playUiClickSound);
     });
 
-    // Привязываем звук трещотки к ползунку
     progressBar.addEventListener('input', () => {
       playVibrateSound();
       if (audio.duration) {
         audio.currentTime = (progressBar.value / 100) * audio.duration;
       }
     });
-    // ----------------------------------------
 
+    /* --- КУРСОР И ПАРАЛЛАКС --- */
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let cursorX = mouseX;
@@ -730,10 +786,9 @@
       e.stopPropagation();
       introScreen.classList.add('hide');
       initAudioContext();
-      getSoundContext(); // инициализируем звуковой движок по клику
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      getSoundContext();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      
       audio.play().then(() => {
         playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
       }).catch(err => console.log("Play blocked:", err));
